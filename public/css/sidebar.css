@@ -1,0 +1,154 @@
+body {
+    background: #f5f5f5;
+}
+
+/* Sidebar */
+.sidebar-custom {
+    position: fixed;
+    width: 260px;
+    height: 100vh;
+    background: #1f2937;
+    left: 0;
+    top: 0;
+    z-index: 1500;
+    transition: 0.3s;
+}
+
+/* Wrapper kanan */
+.main-wrapper {
+    margin-left: 260px;
+    padding: 20px;
+    transition: 0.3s;
+}
+
+/* MOBILE MODE */
+@media (max-width: 768px) {
+    .sidebar-custom {
+        left: -260px;
+    }
+
+    .sidebar-custom.active {
+        left: 0;
+    }
+
+    .main-wrapper {
+        margin-left: 0;
+    }
+}
+
+/* Overlay */
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1400;
+}
+
+#overlay.active {
+    display: block;
+}
+
+/* Sidebar Container */
+.sidebar-custom {
+    position: fixed;
+    width: 260px;
+    height: 100vh;
+    overflow-y: auto;
+
+    /* Background gambar sidebar */
+    background: url('/assets/images/sidebar/sidebar-bg.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+/* Overlay agar tulisan jelas */
+.sidebar-custom::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+/* Semua isi sidebar tampil di atas overlay */
+.sidebar-custom > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Logo */
+.sidebar-logo-img {
+    width: 140px;
+    border-radius: 6px;
+}
+
+/* Title */
+.sidebar-title {
+    color: #ffffff;
+}
+
+/* Sidebar links */
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 15px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    transition: 0.2s;
+}
+
+.sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Divider */
+.sidebar-divider {
+    border-color: rgba(255, 255, 255, 0.25);
+    margin: 20px 0;
+}
+
+/* DROPDOWN WRAPPER */
+.sidebar-dropdown {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* DROPDOWN BUTTON (tidak memakai .sidebar-link agar tidak bentrok) */
+.sidebar-dropdown-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.sidebar-dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* HIDDEN MENU */
+.sidebar-dropdown-menu {
+    display: none;
+    padding-left: 35px;
+}
+
+/* SHOW MENU */
+.sidebar-dropdown.active .sidebar-dropdown-menu {
+    display: block;
+}
+
+/* ROTATE ARROW */
+.sidebar-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+    transition: 0.3s;
+}
