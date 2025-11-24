@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dokument;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Report;
 use App\Models\Report_Cell;
 use App\Models\Report_Sheets;
@@ -110,9 +111,60 @@ class LaporanController extends Controller
         ));
     }
 
+     // =========================
+    // VIEW (readonly) Spreadsheet
+    // =========================
+    public function viewSheet($id)
+    {
+        $report = Report::with('sheets.cells')->findOrFail($id);
+
+        $sheet = $report->sheets()->firstOrFail();
+
+        $cells = Report_Cell::where('sheet_id', $sheet->id)
+                    ->get()
+                    ->keyBy('cell');
+
+        $cols = range('A', 'J');
+        $rows = range(1, 20);
+
+        return view('dokumen.spreadsheet.spreadsheetView', compact(
+            'report',
+            'sheet',
+            'cells',
+            'cols',
+            'rows'
+        ));
+    }
+
+    // =========================
+    // EXPORT PDF
+    // =========================
+    public function exportPdf($id)
+    {
+        $report = Report::with('sheets.cells')->findOrFail($id);
+        $sheet = $report->sheets()->firstOrFail();
+
+        $cells = Report_Cell::where('sheet_id', $sheet->id)
+                ->get()
+                ->keyBy('cell');
+
+        $cols = range('A', 'J');
+        $rows = range(1, 20);
+
+        $pdf = PDF::loadView('dokumen.spreadsheet.viewPdf', compact(
+            'report',
+            'sheet',
+            'cells',
+            'cols',
+            'rows'
+        ))->setPaper('a4', 'landscape');
+
+        return $pdf->stream($report->title . '.pdf');
+    }
 
 
-    //////////////////
+
+    
     // CELL
     /////////////////
 
@@ -139,6 +191,8 @@ class LaporanController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+   
 
 
 }

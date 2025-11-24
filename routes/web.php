@@ -54,8 +54,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/dokumen/laporan/spreadsheet', [LaporanController::class, 'index'])->name('dokumen.laporan.spreadsheet');
     Route::get('/dokumen/laporan/{id}/sheet/edit', [LaporanController::class, 'sheet'])
     ->name('dokumen.laporan.sheet');
+    
     Route::get('/dokumen/laporan/{id}/sheet/view', [LaporanController::class, 'viewSheet'])
     ->name('dokumen.laporan.sheet.view');
+
+    Route::get('/dokumen/laporan/{id}/sheet/pdf', [LaporanController::class, 'exportPdf'])
+    ->name('dokumen.laporan.sheet.pdf');
+
     Route::post('/laporan/cell/update', [LaporanController::class, 'updateCell'])
     ->name('laporan.cell.update');
 

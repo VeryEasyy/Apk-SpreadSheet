@@ -94,13 +94,12 @@
                             @endif
 
                             {{-- MODE VIEW (ADMIN & STAFF) --}}
-                            <a href="{{ route('dokumen.laporan.sheet.view', $item->id) }}"
-                            class="btn btn-secondary btn-sm">
-                                <span class="material-icons align-middle" style="font-size:16px">
-                                    visibility
-                                </span>
+                            <button class="btn btn-secondary btn-sm"
+                                data-bs-toggle="modal"
+                                data-bs-target="#viewSheetModal{{ $item->id }}">
+                                <span class="material-icons" style="font-size:16px">visibility</span>
                                 View
-                            </a>
+                            </button>
                         </td>
 
                         @php
@@ -207,6 +206,35 @@
                                     </div>
 
                                 </form>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="viewSheetModal{{ $item->id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content border-0 shadow">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold">Pilih Mode Tampilan</h5>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body text-center">
+
+                                    <a href="{{ route('dokumen.laporan.sheet.view', $item->id) }}"
+                                    class="btn btn-primary w-100 mb-3">
+                                        <span class="material-icons align-middle">grid_on</span>
+                                        View Spreadsheet
+                                    </a>
+
+                                    <a href="{{ route('dokumen.laporan.sheet.pdf', $item->id) }}"
+                                    class="btn btn-danger w-100" target="_blank">
+                                        <span class="material-icons align-middle">picture_as_pdf</span>
+                                        View PDF
+                                    </a>
+
+                                </div>
 
                             </div>
                         </div>
