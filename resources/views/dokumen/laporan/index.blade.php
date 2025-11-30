@@ -10,12 +10,57 @@
     <div class="card-body">
 
         <div class="d-flex justify-content-between mb-3">
+
             <h5 class="fw-semibold">Daftar Laporan</h5>
 
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tambahLaporanModal">
-                <span class="material-icons me-1" style="font-size:18px;">add</span> Tambah Laporan
-            </button>
+            <div class="d-flex gap-2">
+
+                {{-- SEARCH --}}
+                <form action="{{ route('dokumen.laporan') }}" method="GET" class="d-flex">
+                    <input type="text" name="search" class="form-control form-control-sm"
+                        placeholder="Cari judul..." value="{{ request('search') }}">
+                </form>
+
+                {{-- FILTER STATUS --}}
+                <form action="{{ route('dokumen.laporan') }}" method="GET">
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Status</option>
+                        <option value="draft" {{ request('status')=='draft'?'selected':'' }}>Draft</option>
+                        <option value="published" {{ request('status')=='published'?'selected':'' }}>Published</option>
+                        <option value="archived" {{ request('status')=='archived'?'selected':'' }}>Archived</option>
+                    </select>
+                </form>
+
+                {{-- FILTER PEMBUAT --}}
+                <form action="{{ route('dokumen.laporan') }}" method="GET">
+                    <select name="owner" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">Semua Pembuat</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}"
+                                {{ request('owner') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+
+                {{-- BUTTON TAMBAH --}}
+                @if(auth()->user()->role === 'admin')
+                    <button class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#tambahLaporanModal">
+                        <span class="material-icons" style="font-size:16px">add</span>
+                        Tambah
+                    </button>
+                @endif
+                
+                {{-- RESET --}}
+                <a href="{{ route('dokumen.laporan') }}" class="btn btn-secondary btn-sm">Reset</a>
+
+            </div>
+
         </div>
+
 
         <div class="table-responsive">
             <table class="table table-striped align-middle">
@@ -256,51 +301,53 @@
 </div>
 
 {{-- ================= MODAL TAMBAH ================= --}}
-<div class="modal fade" id="tambahLaporanModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content border-0 shadow">
+@if(auth()->user()->role === 'admin')
+    <div class="modal fade" id="tambahLaporanModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Tambah Laporan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Tambah Laporan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <form action="{{ route('dokumen.laporan.store') }}" method="POST">
+                    @csrf
+
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label class="form-label">Judul Laporan</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="description" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-control" name="status">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+
+                </form>
+
             </div>
-
-            <form action="{{ route('dokumen.laporan.store') }}" method="POST">
-                @csrf
-
-                <div class="modal-body">
-
-                    <div class="mb-3">
-                        <label class="form-label">Judul Laporan</label>
-                        <input type="text" name="title" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea name="description" class="form-control" rows="4"></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-control" name="status">
-                            <option value="draft">Draft</option>
-                            <option value="published">Published</option>
-                            <option value="archived">Archived</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-
-            </form>
-
         </div>
     </div>
-</div>
+@endif
+
 
 
 {{-- SweetAlert Success --}}

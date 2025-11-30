@@ -7,6 +7,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Report;
 use App\Models\Report_Cell;
 use App\Models\Report_Sheets;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,13 +16,32 @@ class LaporanController extends Controller
     // Halaman Laporan
     public function index()
     {
+        $users = User::orderBy('name')->get();
 
-         $laporan = Report::with([
-        'owner',
-        'sheets.cells.updatedBy' 
-    ])->latest()->get();
+        $query = Report::with([
+            'owner',
+            'sheets.cells.updatedBy' 
+        ])->latest();
 
-        return view('dokumen.laporan.index', compact('laporan'));
+        // filter judul
+        if(request('search')){
+            $query->where('title', 'like', '%' . request('search') . '%');
+        }
+
+        // filter status    
+        if(request('status')){
+            $query->where('status', request('status'));
+        }
+
+        // filter pembuat
+        if(request('owner')){
+            $query->where('owner_id', request('owner'));
+        }
+
+        $laporan = $query->get();
+            
+
+        return view('dokumen.laporan.index', compact('laporan', 'users'));
     }
 
     // tambah data laporan 
