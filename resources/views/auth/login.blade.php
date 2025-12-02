@@ -99,23 +99,12 @@
 
     </div>
 
-    <!-- Animasi ikon dekoratif -->
-    {{-- <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <i class="fas fa-meteor text-yellow-500 text-4xl absolute animate-ping" style="top: 10%; left: 5%;"></i>
-        <i class="fas fa-star text-blue-500 text-2xl absolute animate-pulse" style="top: 20%; right: 10%;"></i>
-        <i class="fas fa-rocket text-red-500 text-5xl absolute float" style="bottom: 15%; left: 15%;"></i>
-        <i class="fas fa-planet-ringed text-purple-500 text-6xl absolute rotate" style="top: 40%; right: 20%;"></i>
-    </div> --}}
-
-    <!-- SweetAlert -->
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-
-    {{-- LOGIN GAGAL --}}
+   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {{-- Pesan error login --}}
     @if ($errors->has('login_error'))
-        {{-- Blade: encode pesan agar aman untuk JS --}}
+       
         @php
             $loginErrorMessage = $errors->first('login_error');
         @endphp
