@@ -20,8 +20,12 @@
 
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="p-8 rounded-3xl shadow-2xl transform max-w-md w-full">
-        <h1 class="text-2xl sm:text-4xl font-bold text-center mb-2" style="font-family: 'Poppins';">
+    <div class="pt-8 pb-8 pr-2 pl-2 sm:p-8 rounded-3xl shadow-2xl transform max-w-md w-full">
+        <div class="w-full flex justify-center top-4 left-0">
+            <img src="{{ asset('assets/images/logo/bando-logo.png') }}" alt="Logo" class="h-12 w-auto">
+        </div>
+
+        <h1 class="mt-5 text-2xl sm:text-4xl font-bold text-center mb-2" style="font-family: 'Poppins';">
             Welcome Back</h1>
         <h1 class="text-xs sm:text-sm font-light text-gray-400 text-center mb-8" style="font-family: 'Poppins';">
             Enter your NIK and Password to access your account</h1>
@@ -65,7 +69,7 @@
 
 
             <button type="submit"
-                class="w-full bg-[#00128E] text-white font-bold py-3 rounded-lg 
+                class="w-full bg-[#00128E] text-white font-bold py-3 rounded-xl 
            transition-all duration-300"
                 style="font-family: 'Poppins', sans-serif;">
                 Log In
@@ -79,7 +83,7 @@
                 Daftar Akun
             </a>
         </div> --}}
-        <div class="flex mt-6 gap-0 sm:gap-2 justify-center">
+        <div class="flex mt-6 gap-2 justify-center">
             <div>
                 <div class="text-xs sm:text-sm font-light text-gray-400" style="font-family: 'Poppins';">Don't Have An
                     Account?
@@ -146,9 +150,9 @@
                 Swal.fire({
                     title: 'Please wait…',
                     html: '<div class="custom-spinner" aria-hidden="true"></div>',
-                    background: 'transparent', 
+                    background: 'transparent',
                     // backdrop: 'rgba(0,0,0,0)',
-                    color: '#fff', 
+                    color: '#fff',
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     allowEnterKey: false,
@@ -162,7 +166,7 @@
                     // },
                 });
 
-                
+
                 setTimeout(function() {
                     window.location.href = "{{ route('dashboard') }}";
 
@@ -180,9 +184,9 @@
 
             .custom-spinner {
                 border: 4px solid #e0e0e0;
-                
+
                 border-top: 4px solid #00128E;
-                
+
                 border-radius: 50%;
                 width: 35px;
                 height: 35px;
