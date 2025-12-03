@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Report;
 use App\Models\Report_Cell;
+use App\Models\Report_Edit_Log;
 use App\Models\Report_Sheets;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,8 +21,11 @@ class LaporanController extends Controller
 
         $query = Report::with([
             'owner',
-            'sheets.cells.updatedBy' 
+            'sheets.cells.updatedBy',
+            'logs',
+            'logs.editor'
         ])->latest();
+
 
         // filter judul
         if(request('search')){
@@ -198,6 +202,31 @@ class LaporanController extends Controller
             'value' => 'nullable'
         ]);
 
+        $CekCell = Report_Cell::where('sheet_id' , $request->sheet_id)
+                    ->where('cell', $request->cell)->first();
+
+        
+        $OldValue = $CekCell->value ?? null;
+
+        // simpan perubahan old value ke new value
+        if($OldValue !== $request->value){
+
+            // ambil sheet untuk dapet report id
+            $sheet = Report_Sheets::find($request->sheet_id);
+
+
+            Report_Edit_Log::create([
+                'report_id' => $sheet->report_id,
+                'sheets_id' => $request->sheet_id,
+                'cell'      => $request->cell,
+                'old_value' => $OldValue,
+                'new_value' => $request->value,
+                'edited_by' => Auth::id(),
+            ]);
+        }
+
+
+        // simpan atau update tabel cell utama
         Report_Cell::updateOrCreate(
             [
                 'sheet_id' => $request->sheet_id,

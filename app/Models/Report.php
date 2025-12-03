@@ -36,4 +36,7 @@ class Report extends Model
     {
         return $this->hasMany(Report_File::class);
     }
+
+    
+
 }

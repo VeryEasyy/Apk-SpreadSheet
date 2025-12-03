@@ -31,19 +31,6 @@
                     </select>
                 </form>
 
-                {{-- FILTER PEMBUAT --}}
-                <form action="{{ route('dokumen.laporan') }}" method="GET">
-                    <select name="owner" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="">Semua Pembuat</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}"
-                                {{ request('owner') == $user->id ? 'selected' : '' }}>
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
-
                 {{-- BUTTON TAMBAH --}}
                 @if(auth()->user()->role === 'admin')
                     <button class="btn btn-primary btn-sm"
@@ -53,7 +40,7 @@
                         Tambah
                     </button>
                 @endif
-                
+
                 {{-- RESET --}}
                 <a href="{{ route('dokumen.laporan') }}" class="btn btn-secondary btn-sm">Reset</a>
 
@@ -73,7 +60,7 @@
                         <th>Status</th>
                         <th width="15%" class="text-center">Aksi</th>
                         <th width="15%" class="text-center">Spreadsheet</th>
-                        <th>Edited</th>
+                        <th>Keterangan</th>
                         <th>waktu & tanggal</th>
                     </tr>
                 </thead>
@@ -107,11 +94,19 @@
                             </button>
 
                             {{-- EDIT --}}
-                            <button class="btn btn-warning btn-sm"
-                                data-bs-toggle="modal"
-                                data-bs-target="#editModal{{ $item->id }}">
-                                <span class="material-icons" style="font-size:16px">edit</span>
-                            </button>
+                            @if ($item->status !== 'published')
+                                <button class="btn btn-warning btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editModal{{ $item->id }}">
+                                    <span class="material-icons" style="font-size:16px">edit</span>
+                                </button>
+                            @else
+                                <button class="btn btn-secondary btn-sm" disabled hidden
+                                    title="Laporan yang sudah dipublikasikan tidak dapat diedit">
+                                    <span class="material-icons" style="font-size:16px">edit</span>
+                                </button>
+                            @endif
+                          
 
                             {{-- DELETE --}}
                             <button class="btn btn-danger btn-sm" onclick="hapusLaporan({{ $item->id }})">
@@ -127,15 +122,26 @@
 
                         </td>
                         <td class="text-center">
+                            {{-- MODE EDIT (ADMIN) --}}
                             @if(auth()->user()->role === 'admin')
-                                {{-- MODE EDIT (ADMIN) --}}
-                                <a href="{{ route('dokumen.laporan.sheet', $item->id) }}"
-                                class="btn btn-success btn-sm me-1">
-                                    <span class="material-icons align-middle" style="font-size:16px">
-                                        grid_on
-                                    </span>
-                                    Edit
+                                @if ($item->status !== 'published')
+                                  <a href="{{ route('dokumen.laporan.sheet', $item->id) }}"
+                                    class="btn btn-success btn-sm me-1">
+                                        <span class="material-icons align-middle" style="font-size:16px">
+                                            grid_on
+                                        </span>
+                                        Edit
                                 </a>
+                                @else
+                                  <a href="{{ route('dokumen.laporan.sheet', $item->id) }}"
+                                    class="btn btn-success btn-sm me-1" hidden>
+                                        <span class="material-icons align-middle" style="font-size:16px">
+                                            grid_on
+                                        </span>
+                                        Edit
+                                </a>
+                                @endif
+                              
                             @endif
 
                             {{-- MODE VIEW (ADMIN & STAFF) --}}
@@ -148,25 +154,27 @@
                         </td>
 
                         @php
-                            $lastSheet = $item->sheets->first();
-                            $lastCell = $lastSheet?->cells
-                                            ->sortByDesc('updated_at')
-                                            ->first();
+                            $lastLog = $item->logs->sortByDesc('created_at')->first();
+
                         @endphp
 
                         <td class="text-center">
-                            @if($lastCell && $lastCell->updatedBy)
+                           @if($lastLog)
                                 <span class="badge bg-info text-dark">
-                                    {{ $lastCell->updatedBy->name }}
+                                    {{ $lastLog->editor->name }}
+                                    mengubah sel <strong>{{ $lastLog->cell }}</strong><br>
+                                    dari "<em>{{ $lastLog->old_value ?? '-' }}</em>"
+                                    menjadi "<em>{{ $lastLog->new_value ?? '-' }}</em>"
                                 </span>
                             @else
-                                <span class="text-muted">Belum diedit</span>
+                                <span class="text-muted">Tidak ada perubahan</span>
                             @endif
+
                         </td>
 
                         <td class="text-center">
-                            @if($lastCell)
-                                {{ $lastCell->updated_at->format('d M Y H:i') }}
+                            @if($lastLog)
+                                {{ \Carbon\Carbon::parse($lastLog->created_at)->format('H:i / d M Y ') }}  
                             @else
                                 <span class="text-muted">-</span>
                             @endif
@@ -330,7 +338,7 @@
                             <select class="form-control" name="status">
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
-                                <option value="archived">Archived</option>
+                                {{-- <option value="archived">Archived</option> --}}
                             </select>
                         </div>
 

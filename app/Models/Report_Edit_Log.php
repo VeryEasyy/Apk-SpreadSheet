@@ -11,7 +11,7 @@ class Report_Edit_Log extends Model
 
     protected $fillable = [
         'report_id',
-        'sheet_id',
+        'sheets_id',
         'cell',
         'old_value',
         'new_value',
