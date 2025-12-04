@@ -1,128 +1,99 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/css/app.css')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', config('app.name', 'Laporan Kantor'))</title>
 
-    <title>@yield('title')</title>
+    {{-- Fonts --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    {{-- Bootstrap --}}
+    {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {{-- Bootstrap Icons --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    {{-- Material Icons --}}
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {{-- Custom CSS --}}
+    <link rel="stylesheet" href="{{ asset('css/layouts/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/layouts/sidebar.css') }}">
 
-    <link rel="stylesheet" href="{{ asset('css/sidebar.css') }}">
-
-    <style>
-        body {
-            background: #f5f5f5;
-        }
-
-        /* Sidebar */
-        .sidebar-custom {
-            position: fixed;
-            width: 260px;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 1500;
-            transition: 0.3s ease;
-        }
-
-        /* Wrapper kanan */
-        .main-wrapper {
-            margin-left: 260px;
-            padding: 20px;
-            transition: 0.3s ease;
-        }
-
-        /* Top bar */
-        .mdc-top-app-bar {
-            background: white;
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-            margin-left: 260px;
-        }
-
-        /* MOBILE MODE */
-        @media (max-width: 768px) {
-            .sidebar-custom {
-                left: -260px;
-            }
-
-            .sidebar-custom.active {
-                left: 0;
-            }
-
-            .main-wrapper {
-                margin-left: 0;
-            }
-        }
-
-        /* Overlay */
-        #overlay {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-            display: none;
-            z-index: 1400;
-        }
-
-        #overlay.active {
-            display: block;
-        }
-    </style>
+    {{-- Page Specific Styles --}}
+    @stack('styles')
 </head>
-
 <body>
+    @auth
+        <div class="app-layout">
+            {{-- Mobile Menu Button --}}
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+                <i class="bi bi-list"></i>
+            </button>
 
-    {{-- Sidebar --}}
-    @include('layouts.sidebar')
+            {{-- Mobile Overlay --}}
+            <div class="mobile-overlay" id="mobileOverlay"></div>
 
-    {{-- Toggle Button --}}
-    <button id="sidebarToggle"
-        class="btn btn-light d-md-none position-fixed"
-        style="top:15px; left:15px; z-index:2000;">
-        <span class="material-icons">menu</span>
-    </button>
+            {{-- Sidebar --}}
+            @include('layouts.partials.sidebar')
 
-    <div id="overlay"></div>
+            {{-- Main Content --}}
+            <main class="main-content">
+                <div class="content-wrapper">
+                    {{-- Breadcrumb (optional) --}}
+                    @if (isset($breadcrumbs))
+                        <nav aria-label="breadcrumb" class="mb-3">
+                            <ol class="breadcrumb">
+                                @foreach ($breadcrumbs as $breadcrumb)
+                                    @if ($loop->last)
+                                        <li class="breadcrumb-item active">{{ $breadcrumb['label'] }}</li>
+                                    @else
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['label'] }}</a>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ol>
+                        </nav>
+                    @endif
 
-    {{-- Content --}}
-    <div class="main-wrapper">
-        @yield('content')
-    </div>
+                    {{-- Flash Messages --}}
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
 
-    {{-- SCRIPT --}}
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-circle me-2"></i>
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    {{-- Page Content --}}
+                    @yield('content')
+                </div>
+            </main>
+        </div>
+    @else
+        {{-- Guest Layout (No Sidebar) --}}
+        <div class="guest-layout">
+            @yield('content')
+        </div>
+    @endauth
+
+    {{-- Bootstrap JS --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        // dropdown menu
-        document.querySelectorAll('.sidebar-dropdown-toggle').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                this.parentElement.classList.toggle('active');
-            });
-        });
+    {{-- Custom JS --}}
+    <script src="{{ asset('js/layouts/sidebar.js') }}"></script>
 
-        // sidebar toggle
-        const sidebar = document.querySelector('.sidebar-custom');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        const overlay = document.getElementById('overlay');
-
-        toggleBtn.addEventListener('click', function () {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        });
-
-        overlay.addEventListener('click', function () {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        });
-    </script>
-
+    {{-- Page Specific Scripts --}}
+    @stack('scripts')
 </body>
 </html>

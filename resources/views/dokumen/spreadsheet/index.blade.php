@@ -2,89 +2,109 @@
 
 @section('title', 'Spreadsheet - ' . $report->title)
 
-@section('content')
-<h4 class="fw-bold mb-3">{{ $report->title }} - Spreadsheet</h4>
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/components/spreadsheet.css') }}">
+@endpush
 
-<div class="spreadsheet-wrapper">
-    <table class="table table-bordered spreadsheet-table">
-        <thead>
-            <tr>
-                <th class="bg-light text-center">#</th>
-                @foreach ($cols as $col)
-                    <th class="text-center bg-light">{{ $col }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($rows as $row)
-                <tr>
-                    <th class="bg-light text-center">{{ $row }}</th>
-                    @foreach ($cols as $col)
-                        @php
-                            $cellId = $col.$row;
-                            $value = $cells[$cellId]->value ?? '';
-                        @endphp
-                        <td contenteditable="true"
-                            class="cell"
-                            data-cell="{{ $cellId }}"
-                            data-sheet="{{ $sheet->id }}">
-                            {{ $value }}
-                        </td>
+@section('content')
+<div class="spreadsheet-container">
+    {{-- Header Section --}}
+    <div class="spreadsheet-header">
+        <div class="header-content">
+            <div class="title-section">
+                <button class="btn-back" onclick="window.history.back()" title="Kembali">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <i class="bi bi-table"></i>
+                <h4 class="title">{{ $report->title }}</h4>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-action" id="importExcel" title="Import Excel">
+                    <i class="bi bi-upload"></i>
+                </button>
+                <button class="btn-action" id="exportExcel" title="Export Excel">
+                    <i class="bi bi-download"></i>
+                </button>
+                <button class="btn-action" onclick="window.print()" title="Print">
+                    <i class="bi bi-printer"></i>
+                </button>
+                <button class="btn-action" id="addColumn" title="Tambah Kolom">
+                    <i class="bi bi-plus-lg"></i> Col
+                </button>
+                <button class="btn-action" id="addRow" title="Tambah Baris">
+                    <i class="bi bi-plus-lg"></i> Row
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Spreadsheet Wrapper --}}
+    <div class="spreadsheet-wrapper">
+        <div class="table-container">
+            <table class="spreadsheet-table" id="spreadsheetTable">
+                <thead>
+                    <tr>
+                        <th class="row-header corner-cell">#</th>
+                        @foreach ($cols as $col)
+                            <th class="col-header" data-col="{{ $col }}">{{ $col }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($rows as $row)
+                        <tr>
+                            <th class="row-header" data-row="{{ $row }}">{{ $row }}</th>
+                            @foreach ($cols as $col)
+                                @php
+                                    $cellId = $col.$row;
+                                    $value = $cells[$cellId]->value ?? '';
+                                @endphp
+                                <td contenteditable="true"
+                                    class="cell"
+                                    data-cell="{{ $cellId }}"
+                                    data-row="{{ $row }}"
+                                    data-col="{{ $col }}"
+                                    data-sheet-id="{{ $sheet->id }}"
+                                    spellcheck="false">{{ $value }}</td>
+                            @endforeach
+                        </tr>
                     @endforeach
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Footer Info --}}
+    <div class="spreadsheet-footer">
+        <div class="cell-info">
+            <span class="active-cell">Cell: <strong>-</strong></span>
+            <span class="selection-info" style="margin-left: 20px; display: none;">
+                <i class="bi bi-check-square"></i> <strong class="selected-count">0</strong> cells selected
+            </span>
+        </div>
+        <div class="status-info">
+            <span class="status-indicator">
+                <i class="bi bi-check-circle-fill text-success"></i> Auto-saved
+            </span>
+        </div>
+    </div>
+
+    {{-- Hidden File Input for Import --}}
+    <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display: none;">
 </div>
 @endsection
 
-@push('styles')
-<style>
-.spreadsheet-wrapper {
-    overflow-x: auto;
-    background: #fff;
-    padding: 15px;
-}
-
-.spreadsheet-table {
-    border-collapse: collapse;
-    min-width: 900px;
-}
-
-.spreadsheet-table td,
-.spreadsheet-table th {
-    min-width: 100px;
-    height: 35px;
-}
-
-.spreadsheet-table td.cell:focus {
-    outline: 2px solid #0d6efd;
-    background: #eef5ff;
-}
-</style>
-@endpush
-
 @push('scripts')
+{{-- SheetJS Library for Excel Export/Import --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="{{ asset('js/components/spreadsheet.js') }}"></script>
 <script>
-document.querySelectorAll('.cell').forEach(cell => {
-    cell.addEventListener('blur', function () {
-        let value = this.innerText;
-        let cellName = this.dataset.cell;
-        let sheetId = this.dataset.sheet;
-
-        fetch("{{ route('reports.cell.update') }}", {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN' : '{{ csrf_token() }}',
-                'Content-Type' : 'application/json'
-            },
-            body: JSON.stringify({
-                sheet_id: sheetId,
-                cell: cellName,
-                value: value
-            })
-        });
-    });
-});
+    // Initialize spreadsheet with configuration
+    const spreadsheetConfig = {
+        updateRoute: "{{ route('laporan.cell.update') }}",
+        csrfToken: "{{ csrf_token() }}",
+        reportTitle: "{{ $report->title }}",
+        sheetId: "{{ $sheet->id }}"
+    };
 </script>
 @endpush

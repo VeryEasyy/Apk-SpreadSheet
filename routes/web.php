@@ -26,8 +26,8 @@ Route::middleware('auth')->group(function () {
     
     // dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+        return view('dashboard.index');
+    })->name('Dashboard');
 
     // Halaman profil
     Route::get('/akun/profile', [KaryawanController::class, 'index'])->name('akun.profile');

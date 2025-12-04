@@ -157,7 +157,7 @@
 
 
                 setTimeout(function() {
-                    window.location.href = "{{ route('dashboard') }}";
+                    window.location.href = "{{ route('Dashboard') }}";
 
                 }, 2000);
             });
