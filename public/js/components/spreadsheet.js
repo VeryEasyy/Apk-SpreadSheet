@@ -12,6 +12,10 @@ class SpreadsheetManager {
         this.selectionInfo = document.querySelector('.selection-info');
         this.selectedCountDisplay = document.querySelector('.selected-count');
         this.currentCell = null;
+        this.clipboard = {
+            type: null, // 'copy' or 'cut'
+            cells: []
+        };
         
         this.init();
     }
@@ -23,6 +27,8 @@ class SpreadsheetManager {
         this.setupCells();
         this.setupHeaders();
         this.setupButtons();
+        this.setupContextMenu();
+        this.setupKeyboardShortcuts();
     }
 
     /**
@@ -89,7 +95,19 @@ class SpreadsheetManager {
         cell.addEventListener('focus', () => {
             this.currentCell = cell;
             this.activeCellDisplay.textContent = cell.dataset.cell;
-            this.clearAllSelections();
+            
+            // Don't clear selections if Shift is held
+            if (!event || !event.shiftKey) {
+                this.clearAllSelections();
+            }
+        });
+
+        cell.addEventListener('click', (e) => {
+            // Shift+Click for range selection
+            if (e.shiftKey && this.currentCell && this.currentCell !== cell) {
+                e.preventDefault();
+                this.selectCellRange(this.currentCell, cell);
+            }
         });
 
         cell.addEventListener('blur', () => {
@@ -462,6 +480,325 @@ class SpreadsheetManager {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const day = String(now.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    }
+
+    /**
+     * Select range of cells (Shift+Click)
+     */
+    selectCellRange(startCell, endCell) {
+        const startRow = parseInt(startCell.dataset.row);
+        const startCol = startCell.dataset.col.charCodeAt(0);
+        const endRow = parseInt(endCell.dataset.row);
+        const endCol = endCell.dataset.col.charCodeAt(0);
+
+        const minRow = Math.min(startRow, endRow);
+        const maxRow = Math.max(startRow, endRow);
+        const minCol = Math.min(startCol, endCol);
+        const maxCol = Math.max(startCol, endCol);
+
+        this.clearAllSelections();
+
+        for (let row = minRow; row <= maxRow; row++) {
+            for (let col = minCol; col <= maxCol; col++) {
+                const cellId = String.fromCharCode(col) + row;
+                const cell = document.querySelector(`[data-cell="${cellId}"]`);
+                if (cell) {
+                    cell.classList.add('selected');
+                }
+            }
+        }
+
+        this.showSelectionInfo();
+    }
+
+    /**
+     * Setup context menu
+     */
+    setupContextMenu() {
+        const contextMenu = document.getElementById('contextMenu');
+        
+        // Show context menu on right click
+        document.addEventListener('contextmenu', (e) => {
+            const cell = e.target.closest('.cell');
+            if (cell) {
+                e.preventDefault();
+                this.showContextMenu(e, cell);
+            } else {
+                this.hideContextMenu();
+            }
+        });
+
+        // Hide context menu on click outside
+        document.addEventListener('click', () => {
+            this.hideContextMenu();
+        });
+
+        // Context menu item actions
+        contextMenu.addEventListener('click', (e) => {
+            const item = e.target.closest('.context-menu-item');
+            if (item && !item.classList.contains('disabled')) {
+                const action = item.dataset.action;
+                this.handleContextMenuAction(action);
+                this.hideContextMenu();
+            }
+        });
+
+        // Prevent context menu from closing when clicking inside
+        contextMenu.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    }
+
+    /**
+     * Show context menu
+     */
+    showContextMenu(event, cell) {
+        const contextMenu = document.getElementById('contextMenu');
+        
+        // If cell is not selected, select it
+        if (!cell.classList.contains('selected')) {
+            this.clearAllSelections();
+            cell.classList.add('selected');
+            this.currentCell = cell;
+        }
+
+        // Position context menu
+        const x = event.pageX;
+        const y = event.pageY;
+        
+        contextMenu.style.left = `${x}px`;
+        contextMenu.style.top = `${y}px`;
+        contextMenu.classList.add('show');
+
+        // Enable/disable paste based on clipboard
+        const pasteItem = contextMenu.querySelector('[data-action="paste"]');
+        if (this.clipboard.cells.length > 0) {
+            pasteItem.classList.remove('disabled');
+        } else {
+            pasteItem.classList.add('disabled');
+        }
+
+        // Adjust position if menu goes off screen
+        setTimeout(() => {
+            const menuRect = contextMenu.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            if (menuRect.right > windowWidth) {
+                contextMenu.style.left = `${windowWidth - menuRect.width - 10}px`;
+            }
+            if (menuRect.bottom > windowHeight) {
+                contextMenu.style.top = `${windowHeight - menuRect.height - 10}px`;
+            }
+        }, 0);
+    }
+
+    /**
+     * Hide context menu
+     */
+    hideContextMenu() {
+        const contextMenu = document.getElementById('contextMenu');
+        contextMenu.classList.remove('show');
+    }
+
+    /**
+     * Handle context menu actions
+     */
+    handleContextMenuAction(action) {
+        switch(action) {
+            case 'copy':
+                this.copySelectedCells();
+                break;
+            case 'cut':
+                this.cutSelectedCells();
+                break;
+            case 'paste':
+                this.pasteClipboard();
+                break;
+            case 'delete':
+                this.deleteSelectedCells();
+                break;
+            case 'clear':
+                this.clearSelectedCells();
+                break;
+            case 'insert-row':
+                this.addRow();
+                break;
+            case 'insert-column':
+                this.addColumn();
+                break;
+        }
+    }
+
+    /**
+     * Copy selected cells
+     */
+    copySelectedCells() {
+        const selectedCells = document.querySelectorAll('.cell.selected');
+        if (selectedCells.length === 0) return;
+
+        // Clear previous clipboard styling
+        document.querySelectorAll('.cell.copied, .cell.cut').forEach(cell => {
+            cell.classList.remove('copied', 'cut');
+        });
+
+        this.clipboard.type = 'copy';
+        this.clipboard.cells = Array.from(selectedCells).map(cell => ({
+            element: cell,
+            value: cell.textContent,
+            cellId: cell.dataset.cell
+        }));
+
+        // Add visual indication
+        selectedCells.forEach(cell => {
+            cell.classList.add('copied');
+        });
+
+        this.showNotification(`${selectedCells.length} cell(s) copied`);
+    }
+
+    /**
+     * Cut selected cells
+     */
+    cutSelectedCells() {
+        const selectedCells = document.querySelectorAll('.cell.selected');
+        if (selectedCells.length === 0) return;
+
+        // Clear previous clipboard styling
+        document.querySelectorAll('.cell.copied, .cell.cut').forEach(cell => {
+            cell.classList.remove('copied', 'cut');
+        });
+
+        this.clipboard.type = 'cut';
+        this.clipboard.cells = Array.from(selectedCells).map(cell => ({
+            element: cell,
+            value: cell.textContent,
+            cellId: cell.dataset.cell
+        }));
+
+        // Add visual indication
+        selectedCells.forEach(cell => {
+            cell.classList.add('cut');
+        });
+
+        this.showNotification(`${selectedCells.length} cell(s) cut`);
+    }
+
+    /**
+     * Paste clipboard contents
+     */
+    pasteClipboard() {
+        if (this.clipboard.cells.length === 0) return;
+
+        const targetCell = this.currentCell || document.querySelector('.cell.selected');
+        if (!targetCell) return;
+
+        // Get starting position
+        const startRow = parseInt(targetCell.dataset.row);
+        const startCol = targetCell.dataset.col.charCodeAt(0);
+
+        // Calculate source dimensions
+        const sourceRows = new Set(this.clipboard.cells.map(c => c.element.dataset.row));
+        const sourceCols = new Set(this.clipboard.cells.map(c => c.element.dataset.col));
+        const minSourceRow = Math.min(...Array.from(sourceRows).map(r => parseInt(r)));
+        const minSourceCol = Math.min(...Array.from(sourceCols).map(c => c.charCodeAt(0)));
+
+        // Paste each cell
+        this.clipboard.cells.forEach(clipboardCell => {
+            const sourceRow = parseInt(clipboardCell.element.dataset.row);
+            const sourceCol = clipboardCell.element.dataset.col.charCodeAt(0);
+            
+            // Calculate offset
+            const rowOffset = sourceRow - minSourceRow;
+            const colOffset = sourceCol - minSourceCol;
+            
+            // Calculate target position
+            const targetRow = startRow + rowOffset;
+            const targetCol = String.fromCharCode(startCol + colOffset);
+            const targetCellId = targetCol + targetRow;
+            
+            // Find target cell
+            const targetElement = document.querySelector(`[data-cell="${targetCellId}"]`);
+            if (targetElement && targetElement.classList.contains('cell')) {
+                targetElement.textContent = clipboardCell.value;
+                this.saveCell(targetElement);
+            }
+        });
+
+        // If cut, clear source cells
+        if (this.clipboard.type === 'cut') {
+            this.clipboard.cells.forEach(clipboardCell => {
+                clipboardCell.element.textContent = '';
+                clipboardCell.element.classList.remove('cut');
+                this.saveCell(clipboardCell.element);
+            });
+        }
+
+        // Clear clipboard styling
+        document.querySelectorAll('.cell.copied, .cell.cut').forEach(cell => {
+            cell.classList.remove('copied', 'cut');
+        });
+
+        this.showNotification(`${this.clipboard.cells.length} cell(s) pasted`);
+    }
+
+    /**
+     * Delete selected cells
+     */
+    deleteSelectedCells() {
+        const selectedCells = document.querySelectorAll('.cell.selected');
+        if (selectedCells.length === 0) return;
+
+        selectedCells.forEach(cell => {
+            cell.textContent = '';
+            this.saveCell(cell);
+        });
+
+        this.showNotification(`${selectedCells.length} cell(s) deleted`);
+    }
+
+    /**
+     * Clear selected cells
+     */
+    clearSelectedCells() {
+        this.deleteSelectedCells();
+    }
+
+    /**
+     * Setup keyboard shortcuts
+     */
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Ignore if typing in a cell
+            if (document.activeElement.classList.contains('cell') && 
+                document.activeElement.contentEditable === 'true') {
+                return;
+            }
+
+            // Ctrl/Cmd + C - Copy
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+                e.preventDefault();
+                this.copySelectedCells();
+            }
+
+            // Ctrl/Cmd + X - Cut
+            if ((e.ctrlKey || e.metaKey) && e.key === 'x') {
+                e.preventDefault();
+                this.cutSelectedCells();
+            }
+
+            // Ctrl/Cmd + V - Paste
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                e.preventDefault();
+                this.pasteClipboard();
+            }
+
+            // Delete - Delete cells
+            if (e.key === 'Delete') {
+                e.preventDefault();
+                this.deleteSelectedCells();
+            }
+        });
     }
 }
 

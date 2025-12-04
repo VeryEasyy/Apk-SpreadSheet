@@ -91,6 +91,44 @@
 
     {{-- Hidden File Input for Import --}}
     <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display: none;">
+
+    {{-- Context Menu --}}
+    <div class="context-menu" id="contextMenu">
+        <div class="context-menu-item" data-action="copy">
+            <i class="bi bi-files"></i>
+            <span>Copy</span>
+            <span class="shortcut">Ctrl+C</span>
+        </div>
+        <div class="context-menu-item" data-action="cut">
+            <i class="bi bi-scissors"></i>
+            <span>Cut</span>
+            <span class="shortcut">Ctrl+X</span>
+        </div>
+        <div class="context-menu-item" data-action="paste">
+            <i class="bi bi-clipboard"></i>
+            <span>Paste</span>
+            <span class="shortcut">Ctrl+V</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="delete">
+            <i class="bi bi-trash"></i>
+            <span>Delete</span>
+            <span class="shortcut">Del</span>
+        </div>
+        <div class="context-menu-item" data-action="clear">
+            <i class="bi bi-eraser"></i>
+            <span>Clear Contents</span>
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="insert-row">
+            <i class="bi bi-plus-square"></i>
+            <span>Insert Row</span>
+        </div>
+        <div class="context-menu-item" data-action="insert-column">
+            <i class="bi bi-plus-square"></i>
+            <span>Insert Column</span>
+        </div>
+    </div>
 </div>
 @endsection
 

@@ -336,6 +336,139 @@
     }
 }
 
+/* context menu */
+.context-menu {
+    position: fixed;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    padding: 8px 0;
+    min-width: 220px;
+    z-index: 10000;
+    display: none;
+    user-select: none;
+}
+
+.context-menu.show {
+    display: block;
+    animation: contextMenuShow 0.15s ease;
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: #333;
+    font-size: 14px;
+}
+
+.context-menu-item:hover {
+    background: #f5f5f5;
+}
+
+.context-menu-item.disabled {
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.context-menu-item.disabled:hover {
+    background: transparent;
+}
+
+.context-menu-item i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: #667eea;
+}
+
+.context-menu-item span:first-of-type {
+    flex: 1;
+}
+
+.context-menu-item .shortcut {
+    font-size: 11px;
+    color: #999;
+    margin-left: auto;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: #e0e0e0;
+    margin: 8px 0;
+}
+
+@keyframes contextMenuShow {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Copied/Cut Cell Indication */
+.cell.copied {
+    outline: 2px dashed #28a745;
+    outline-offset: -2px;
+    animation: copiedPulse 1s ease-in-out infinite;
+}
+
+.cell.cut {
+    outline: 2px dashed #dc3545;
+    outline-offset: -2px;
+    opacity: 0.6;
+    animation: cutPulse 1s ease-in-out infinite;
+}
+
+@keyframes copiedPulse {
+    0%, 100% {
+        outline-color: #28a745;
+    }
+    50% {
+        outline-color: #20c997;
+    }
+}
+
+@keyframes cutPulse {
+    0%, 100% {
+        outline-color: #dc3545;
+    }
+    50% {
+        outline-color: #fd7e14;
+    }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+@media print {
+    .spreadsheet-header,
+    .spreadsheet-footer,
+    .btn-action,
+    .btn-back,
+    .context-menu {
+        display: none !important;
+    }
+    
+    .spreadsheet-wrapper {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .spreadsheet-table {
+        page-break-inside: avoid;
+    }
+}
+
+
+/* print style */
 @media print {
     .spreadsheet-header,
     .spreadsheet-footer,
