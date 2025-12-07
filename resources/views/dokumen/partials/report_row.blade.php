@@ -1,6 +1,5 @@
 @php
-    $lastSheet = $report->sheets->first();
-    $lastCell = $lastSheet?->cells->sortByDesc('updated_at')->first();
+    $lastLog = $item->logs->sortByDesc('created_at')->first();
 @endphp
 
 <tr>
@@ -37,11 +36,8 @@
 
     {{-- Last Edited Date --}}
     <td>
-        @if($lastCell)
-            <div class="date-time-info">
-                <span class="date-text">{{ $lastCell->updated_at->format('d M Y') }}</span>
-                <span class="time-text">{{ $lastCell->updated_at->format('H:i') }}</span>
-            </div>
+        @if($lastLog)
+            {{ \Carbon\Carbon::parse($lastLog->created_at)->format('d M Y H:i') }}
         @else
             <span class="text-muted">-</span>
         @endif
@@ -49,13 +45,27 @@
 
     {{-- Editor --}}
     <td>
-        @if($lastCell && $lastCell->updatedBy)
-            <span class="editor-badge">
-                <i class="bi bi-pencil"></i>
-                {{ $lastCell->updatedBy->name }}
-            </span>
+        @if($lastLog)
+            <div class="user-info">
+                <div class="user-avatar">
+                    {{ strtoupper(substr($lastLog->editor->name ?? 'U', 0, 1)) }}
+                </div>
+                <span class="user-name">{{ $lastLog->editor->name ?? 'Tidak diketahui' }}</span>
+            </div>
         @else
             <span class="text-muted">-</span>
+        @endif
+    </td>
+    <td>
+         @if($lastLog)
+            <span class="text-muted">
+                {{ $lastLog->editor->name }}
+                mengubah sel <strong>{{ $lastLog->cell }}</strong><br>
+                dari "<em>{{ $lastLog->old_value ?? '-' }}</em>"
+                menjadi "<em>{{ $lastLog->new_value ?? '-' }}</em>"
+            </span>
+        @else
+            <span class="text-muted">Belum ada perubahan</span>
         @endif
     </td>
 
