@@ -38,6 +38,102 @@
         </div>
     </div>
 
+    {{-- Formatting Toolbar --}}
+    <div class="formatting-toolbar">
+        <div class="toolbar-group">
+            <label class="toolbar-label">Font:</label>
+            <select class="toolbar-select" id="fontFamily">
+                <option value="Inter">Inter</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+            <select class="toolbar-select" id="fontSize">
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="14" selected>14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="24">24</option>
+                <option value="28">28</option>
+                <option value="32">32</option>
+            </select>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="boldBtn" title="Bold (Ctrl+B)" data-format="bold">
+                <i class="bi bi-type-bold"></i>
+            </button>
+            <button class="toolbar-btn" id="italicBtn" title="Italic (Ctrl+I)" data-format="italic">
+                <i class="bi bi-type-italic"></i>
+            </button>
+            <button class="toolbar-btn" id="underlineBtn" title="Underline (Ctrl+U)" data-format="underline">
+                <i class="bi bi-type-underline"></i>
+            </button>
+            <button class="toolbar-btn" id="strikethroughBtn" title="Strikethrough" data-format="strikethrough">
+                <i class="bi bi-type-strikethrough"></i>
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="textColorBtn" title="Text Color">
+                <i class="bi bi-fonts"></i>
+                <input type="color" id="textColor" value="#000000" style="display: none;">
+            </button>
+            <button class="toolbar-btn" id="bgColorBtn" title="Background Color">
+                <i class="bi bi-paint-bucket"></i>
+                <input type="color" id="bgColor" value="#ffffff" style="display: none;">
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="alignLeftBtn" title="Align Left" data-align="left">
+                <i class="bi bi-text-left"></i>
+            </button>
+            <button class="toolbar-btn" id="alignCenterBtn" title="Align Center" data-align="center">
+                <i class="bi bi-text-center"></i>
+            </button>
+            <button class="toolbar-btn" id="alignRightBtn" title="Align Right" data-align="right">
+                <i class="bi bi-text-right"></i>
+            </button>
+            <button class="toolbar-btn" id="alignJustifyBtn" title="Justify" data-align="justify">
+                <i class="bi bi-justify"></i>
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="verticalTopBtn" title="Vertical Top" data-valign="top">
+                <i class="bi bi-align-top"></i>
+            </button>
+            <button class="toolbar-btn" id="verticalMiddleBtn" title="Vertical Middle" data-valign="middle">
+                <i class="bi bi-align-middle"></i>
+            </button>
+            <button class="toolbar-btn" id="verticalBottomBtn" title="Vertical Bottom" data-valign="bottom">
+                <i class="bi bi-align-bottom"></i>
+            </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <div class="toolbar-group">
+            <button class="toolbar-btn" id="clearFormatBtn" title="Clear Formatting">
+                <i class="bi bi-eraser"></i>
+            </button>
+        </div>
+    </div>
+
     {{-- Spreadsheet Wrapper --}}
     <div class="spreadsheet-wrapper">
         <div class="table-container">

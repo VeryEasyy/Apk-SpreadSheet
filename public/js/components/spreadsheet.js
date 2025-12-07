@@ -29,6 +29,7 @@ class SpreadsheetManager {
         this.setupButtons();
         this.setupContextMenu();
         this.setupKeyboardShortcuts();
+        this.setupFormattingToolbar();
     }
 
     /**
@@ -194,6 +195,9 @@ class SpreadsheetManager {
         const value = cell.innerText.trim();
         const cellName = cell.dataset.cell;
         const sheetId = cell.dataset.sheetId;
+        
+        // Get inline styles
+        const styles = cell.getAttribute('style') || '';
 
         this.updateStatus('saving', 'Saving...', '#ffc107');
 
@@ -207,7 +211,8 @@ class SpreadsheetManager {
                 body: JSON.stringify({
                     sheet_id: sheetId,
                     cell: cellName,
-                    value: value
+                    value: value,
+                    styles: styles
                 })
             });
 
@@ -772,6 +777,20 @@ class SpreadsheetManager {
             // Ignore if typing in a cell
             if (document.activeElement.classList.contains('cell') && 
                 document.activeElement.contentEditable === 'true') {
+                
+                // Allow formatting shortcuts while editing
+                if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 'b') {
+                        e.preventDefault();
+                        this.toggleFormat('bold');
+                    } else if (e.key === 'i') {
+                        e.preventDefault();
+                        this.toggleFormat('italic');
+                    } else if (e.key === 'u') {
+                        e.preventDefault();
+                        this.toggleFormat('underline');
+                    }
+                }
                 return;
             }
 
@@ -798,6 +817,331 @@ class SpreadsheetManager {
                 e.preventDefault();
                 this.deleteSelectedCells();
             }
+
+            // Formatting shortcuts
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                this.toggleFormat('bold');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                this.toggleFormat('italic');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+                e.preventDefault();
+                this.toggleFormat('underline');
+            }
+        });
+    }
+
+    /**
+     * Setup formatting toolbar
+     */
+    setupFormattingToolbar() {
+        // Font family
+        const fontFamily = document.getElementById('fontFamily');
+        if (fontFamily) {
+            fontFamily.addEventListener('change', (e) => {
+                this.applyFontFamily(e.target.value);
+            });
+        }
+
+        // Font size
+        const fontSize = document.getElementById('fontSize');
+        if (fontSize) {
+            fontSize.addEventListener('change', (e) => {
+                this.applyFontSize(e.target.value);
+            });
+        }
+
+        // Text formatting buttons (bold, italic, underline, strikethrough)
+        document.querySelectorAll('.toolbar-btn[data-format]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const format = btn.dataset.format;
+                this.toggleFormat(format);
+            });
+        });
+
+        // Text color
+        const textColorBtn = document.getElementById('textColorBtn');
+        const textColorInput = document.getElementById('textColor');
+        if (textColorBtn && textColorInput) {
+            textColorBtn.addEventListener('click', () => {
+                textColorInput.click();
+            });
+            textColorInput.addEventListener('change', (e) => {
+                this.applyTextColor(e.target.value);
+                textColorBtn.style.setProperty('--text-color', e.target.value);
+            });
+        }
+
+        // Background color
+        const bgColorBtn = document.getElementById('bgColorBtn');
+        const bgColorInput = document.getElementById('bgColor');
+        if (bgColorBtn && bgColorInput) {
+            bgColorBtn.addEventListener('click', () => {
+                bgColorInput.click();
+            });
+            bgColorInput.addEventListener('change', (e) => {
+                this.applyBackgroundColor(e.target.value);
+                bgColorBtn.style.setProperty('--bg-color', e.target.value);
+            });
+        }
+
+        // Text alignment buttons
+        document.querySelectorAll('.toolbar-btn[data-align]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const align = btn.dataset.align;
+                this.applyTextAlign(align);
+            });
+        });
+
+        // Vertical alignment buttons
+        document.querySelectorAll('.toolbar-btn[data-valign]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const valign = btn.dataset.valign;
+                this.applyVerticalAlign(valign);
+            });
+        });
+
+        // Clear formatting
+        const clearFormatBtn = document.getElementById('clearFormatBtn');
+        if (clearFormatBtn) {
+            clearFormatBtn.addEventListener('click', () => {
+                this.clearFormatting();
+            });
+        }
+
+        // Update toolbar state when cell is selected
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('cell')) {
+                this.updateToolbarState(e.target);
+            }
+        });
+    }
+
+    /**
+     * Apply font family to selected cells
+     */
+    applyFontFamily(fontFamily) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.fontFamily = fontFamily;
+            this.saveCell(cell);
+        });
+        this.showNotification(`Font changed to ${fontFamily}`);
+    }
+
+    /**
+     * Apply font size to selected cells
+     */
+    applyFontSize(fontSize) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.fontSize = fontSize + 'px';
+            this.saveCell(cell);
+        });
+        this.showNotification(`Font size changed to ${fontSize}px`);
+    }
+
+    /**
+     * Toggle text format (bold, italic, underline, strikethrough)
+     */
+    toggleFormat(format) {
+        const selectedCells = this.getSelectedCells();
+        if (selectedCells.length === 0) return;
+
+        const formatMap = {
+            'bold': 'fontWeight',
+            'italic': 'fontStyle',
+            'underline': 'textDecoration',
+            'strikethrough': 'textDecoration'
+        };
+
+        const valueMap = {
+            'bold': { on: 'bold', off: 'normal' },
+            'italic': { on: 'italic', off: 'normal' },
+            'underline': { on: 'underline', off: 'none' },
+            'strikethrough': { on: 'line-through', off: 'none' }
+        };
+
+        const styleProperty = formatMap[format];
+        const values = valueMap[format];
+
+        // Check if first cell has the format applied
+        const firstCell = selectedCells[0];
+        const currentValue = firstCell.style[styleProperty];
+        const isActive = currentValue === values.on || 
+                        (format === 'underline' && currentValue.includes('underline')) ||
+                        (format === 'strikethrough' && currentValue.includes('line-through'));
+
+        selectedCells.forEach(cell => {
+            if (format === 'underline' || format === 'strikethrough') {
+                // Handle text-decoration specially (can have multiple values)
+                const decorations = (cell.style.textDecoration || '').split(' ').filter(d => d);
+                
+                if (isActive) {
+                    // Remove decoration
+                    cell.style.textDecoration = decorations
+                        .filter(d => d !== values.on)
+                        .join(' ') || 'none';
+                } else {
+                    // Add decoration
+                    if (!decorations.includes(values.on)) {
+                        decorations.push(values.on);
+                    }
+                    cell.style.textDecoration = decorations.filter(d => d !== 'none').join(' ');
+                }
+            } else {
+                cell.style[styleProperty] = isActive ? values.off : values.on;
+            }
+            this.saveCell(cell);
+        });
+
+        // Update button state
+        const btn = document.querySelector(`[data-format="${format}"]`);
+        if (btn) {
+            btn.classList.toggle('active', !isActive);
+        }
+
+        this.showNotification(`${format} ${isActive ? 'removed' : 'applied'}`);
+    }
+
+    /**
+     * Apply text color to selected cells
+     */
+    applyTextColor(color) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.color = color;
+            this.saveCell(cell);
+        });
+        this.showNotification('Text color applied');
+    }
+
+    /**
+     * Apply background color to selected cells
+     */
+    applyBackgroundColor(color) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.backgroundColor = color;
+            this.saveCell(cell);
+        });
+        this.showNotification('Background color applied');
+    }
+
+    /**
+     * Apply text alignment to selected cells
+     */
+    applyTextAlign(align) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.textAlign = align;
+            this.saveCell(cell);
+        });
+
+        // Update button states
+        document.querySelectorAll('.toolbar-btn[data-align]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-align="${align}"]`)?.classList.add('active');
+
+        this.showNotification(`Text aligned ${align}`);
+    }
+
+    /**
+     * Apply vertical alignment to selected cells
+     */
+    applyVerticalAlign(valign) {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            cell.style.verticalAlign = valign;
+            this.saveCell(cell);
+        });
+
+        // Update button states
+        document.querySelectorAll('.toolbar-btn[data-valign]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-valign="${valign}"]`)?.classList.add('active');
+
+        this.showNotification(`Vertical alignment set to ${valign}`);
+    }
+
+    /**
+     * Clear all formatting from selected cells
+     */
+    clearFormatting() {
+        const selectedCells = this.getSelectedCells();
+        selectedCells.forEach(cell => {
+            // Remove all inline styles
+            cell.removeAttribute('style');
+            this.saveCell(cell);
+        });
+
+        // Reset toolbar buttons
+        document.querySelectorAll('.toolbar-btn.active').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        this.showNotification('Formatting cleared');
+    }
+
+    /**
+     * Get all selected cells
+     */
+    getSelectedCells() {
+        let cells = Array.from(document.querySelectorAll('.cell.selected'));
+        
+        // If no cells selected, use current cell
+        if (cells.length === 0 && this.currentCell) {
+            cells = [this.currentCell];
+        }
+
+        return cells;
+    }
+
+    /**
+     * Update toolbar state based on selected cell
+     */
+    updateToolbarState(cell) {
+        if (!cell) return;
+
+        const styles = window.getComputedStyle(cell);
+
+        // Update font family
+        const fontFamily = document.getElementById('fontFamily');
+        if (fontFamily) {
+            fontFamily.value = cell.style.fontFamily || 'Inter';
+        }
+
+        // Update font size
+        const fontSize = document.getElementById('fontSize');
+        if (fontSize && cell.style.fontSize) {
+            fontSize.value = parseInt(cell.style.fontSize);
+        }
+
+        // Update format buttons
+        const isBold = styles.fontWeight === 'bold' || styles.fontWeight >= 600;
+        const isItalic = styles.fontStyle === 'italic';
+        const isUnderline = styles.textDecoration.includes('underline');
+        const isStrikethrough = styles.textDecoration.includes('line-through');
+
+        document.getElementById('boldBtn')?.classList.toggle('active', isBold);
+        document.getElementById('italicBtn')?.classList.toggle('active', isItalic);
+        document.getElementById('underlineBtn')?.classList.toggle('active', isUnderline);
+        document.getElementById('strikethroughBtn')?.classList.toggle('active', isStrikethrough);
+
+        // Update alignment buttons
+        const textAlign = cell.style.textAlign || 'left';
+        document.querySelectorAll('.toolbar-btn[data-align]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.align === textAlign);
+        });
+
+        const verticalAlign = cell.style.verticalAlign || 'top';
+        document.querySelectorAll('.toolbar-btn[data-valign]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.valign === verticalAlign);
         });
     }
 }
