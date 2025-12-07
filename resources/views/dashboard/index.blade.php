@@ -4,7 +4,7 @@
 
 @section('content')
 
-<h3 class="fw-bold">Dashboard Laporan</h3>
+<h3 class="fw-bold" style="font-family: 'Poppins';">Dashboard Laporan</h3>
 <p class="text-muted">Selamat datang kembali di sistem laporan spreadsheet.</p>
 
 <div class="row mt-4">

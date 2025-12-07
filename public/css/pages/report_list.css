@@ -1,0 +1,766 @@
+/* ============================================
+   Page Header
+   ============================================ */
+.page-header {
+    margin-bottom: 24px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.page-subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+/* ============================================
+   Modern Card
+   ============================================ */
+.modern-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px); /* Fixed height for the card */
+    min-height: 500px;
+}
+
+.card-header-modern {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0; /* Prevent header from shrinking */
+    background: white;
+    z-index: 10;
+}
+
+.card-title-modern {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, #E10000 20%, #000000 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* ============================================
+   Modern Table with Fixed Header
+   ============================================ */
+.modern-table-wrapper {
+    padding: 0;
+    position: relative;
+    /* Fill remaining space in card */
+    flex: 1;
+    overflow: auto; /* Enable scroll inside table */
+    background: white;
+}
+
+/* Smooth scrolling */
+.modern-table-wrapper {
+    scroll-behavior: smooth;
+    position: relative;
+}
+
+/* Scroll indicators */
+.modern-table-wrapper::before,
+.modern-table-wrapper::after {
+    content: '';
+    position: sticky;
+    display: block;
+    left: 0;
+    right: 0;
+    height: 15px;
+    pointer-events: none;
+    z-index: 90;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modern-table-wrapper::before {
+    top: 52px; /* Height of header */
+    background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, transparent 100%);
+}
+
+.modern-table-wrapper::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(255,255,255,1) 0%, transparent 100%);
+}
+
+/* Show indicators when scrollable */
+.modern-table-wrapper.scrolled::before {
+    opacity: 1;
+}
+
+.modern-table-wrapper.is-scrollable-y::after {
+    opacity: 1;
+}
+
+/* Horizontal scroll indicator */
+.modern-table-wrapper.is-scrollable-x {
+    position: relative;
+}
+
+/* Custom scrollbar for table */
+.modern-table-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px; /* Minimum width for horizontal scroll on mobile */
+}
+
+/* Sticky Header */
+.modern-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+}
+
+.modern-table thead th {
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+    color: #666;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Shadow when scrolling */
+}
+
+/* Add shadow to header when scrolled */
+.modern-table-wrapper.scrolled .modern-table thead th {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modern-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+    background: #f8f9ff;
+}
+
+.modern-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.modern-table tbody td {
+    padding: 16px;
+    color: #333;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+/* ============================================
+   Table Cell Styles
+   ============================================ */
+.row-number {
+    width: 40px;
+    text-align: center;
+    color: #999;
+    font-weight: 600;
+}
+
+.report-title {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #E10000 30%, #444444 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+.user-name {
+    color: #333;
+    font-size: 14px;
+}
+
+.date-time-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-text {
+    color: #333;
+    font-size: 13px;
+}
+
+.time-text {
+    color: #999;
+    font-size: 12px;
+}
+
+/* ============================================
+   Status Badges
+   ============================================ */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-published {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-draft {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-archived {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ============================================
+   Editor Badge
+   ============================================ */
+.editor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #e3f2fd;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #1976d2;
+}
+
+.editor-badge i {
+    font-size: 14px;
+}
+
+/* ============================================
+   Dropdown Menu - FIX POSITIONING
+   ============================================ */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle-modern {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-toggle-modern:hover {
+    background: #f0f0f0;
+}
+
+.dropdown-toggle-modern i {
+    color: #666;
+    font-size: 20px;
+}
+
+/* CRITICAL FIX: Dropdown positioning with scroll */
+.dropdown-menu-modern {
+    position: fixed !important;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    padding: 8px;
+    min-width: 220px;
+    max-width: 280px;
+    z-index: 9999 !important;
+    transform: none !important;
+    will-change: transform;
+    background: white;
+    display: none;
+    list-style: none !important; /* Remove bullet points */
+    margin: 0 !important;
+    
+    /* Enable scroll for small screens */
+    max-height: calc(100vh - 100px); /* Leave space from top and bottom */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom scrollbar for dropdown */
+.dropdown-menu-modern::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-menu-modern::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+    margin: 8px 0; /* Space from top and bottom */
+}
+
+.dropdown-menu-modern::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-menu-modern::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Scroll shadow indicators */
+.dropdown-menu-modern::before,
+.dropdown-menu-modern::after {
+    content: '';
+    position: sticky;
+    display: block;
+    height: 8px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown-menu-modern::before {
+    top: 0;
+    background: linear-gradient(to bottom, white 0%, transparent 100%);
+}
+
+.dropdown-menu-modern::after {
+    bottom: 0;
+    background: linear-gradient(to top, white 0%, transparent 100%);
+}
+
+/* Show shadow when scrollable */
+.dropdown-menu-modern.has-scroll-top::before {
+    opacity: 1;
+}
+
+.dropdown-menu-modern.has-scroll-bottom::after {
+    opacity: 1;
+}
+
+.dropdown-menu-modern.show {
+    display: block !important;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+/* Remove list styling */
+.dropdown-menu-modern li {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.modern-table-wrapper {
+    /* CRITICAL: Internal scroll only */
+    overflow-x: auto;
+    overflow-y: auto;
+    
+    /* CRITICAL: Fixed max height for vertical scroll */
+    max-height: 600px; /* ~10-15 rows visible */
+    
+    /* Width 100% of card */
+    width: 100%;
+    
+    /* Smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    
+    /* Position for dropdown */
+    position: relative;
+    
+    /* Background for shadow effects */
+    background:
+        /* Top fade */
+        linear-gradient(white 30%, rgba(255,255,255,0)),
+        /* Bottom fade */
+        linear-gradient(rgba(255,255,255,0), white 70%) 0 100%,
+        /* Left shadow */
+        radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.15), transparent),
+        /* Right shadow */
+        radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.15), transparent) 100% 0;
+    
+    background-repeat: no-repeat;
+    background-color: white;
+    background-size: 100% 40px, 100% 40px, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+}
+
+/* ============================================
+   Table Structure
+   ============================================ */
+.modern-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    
+    /* CRITICAL: Force horizontal scroll when needed */
+    min-width: 1100px;
+}
+
+/* Sticky Table Header */
+.modern-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+}
+
+.modern-table thead th {
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+    color: #666;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 16px;
+    border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.modern-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.modern-table tbody tr:hover {
+    background: #f8f9ff;
+}
+
+.modern-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.modern-table tbody td {
+    padding: 16px;
+    color: #333;
+    font-size: 14px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+.modern-table-wrapper::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 5px;
+    transition: background 0.2s ease;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.modern-table-wrapper::-webkit-scrollbar-corner {
+    background: #f8f9fa;
+}
+
+
+.dropdown-item-modern {
+    padding: 10px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.dropdown-item-modern:hover {
+    background: #f5f5f5;
+    color: #667eea;
+    text-decoration: none;
+}
+
+.dropdown-item-modern i {
+    font-size: 18px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.dropdown-item-modern span {
+    flex: 1;
+}
+
+.dropdown-divider {
+    margin: 8px 0;
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    height: 1px;
+}
+
+/* Action Icon Colors */
+.icon-view { color: #17a2b8; }
+.icon-edit { color: #ffc107; }
+.icon-delete { color: #dc3545; }
+.icon-spreadsheet { color: #28a745; }
+
+/* ============================================
+   Empty State
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+}
+
+.empty-state h5 {
+    color: #999;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+
+.empty-state p {
+    color: #bbb;
+    font-size: 14px;
+}
+
+/* ============================================
+   Modern Modal
+   ============================================ */
+.modal-content-modern {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.modal-header-modern {
+    background: linear-gradient(135deg, #E10000 0%, #000000 100%);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 24px;
+    border-bottom: none;
+}
+
+.modal-title-modern {
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.modal-body-modern {
+    padding: 24px;
+}
+
+.form-label-modern {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.form-control-modern {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-control-modern:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+    .card-header-modern {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+
+    /* Adjust table wrapper height for mobile */
+    .modern-table-wrapper {
+        max-height: calc(100vh - 360px);
+        min-height: 300px;
+    }
+
+    .modern-table {
+        min-width: 1000px; /* Force horizontal scroll on mobile */
+    }
+
+    .modern-table thead th {
+        padding: 12px 10px;
+        font-size: 11px;
+    }
+
+    .modern-table tbody td {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+
+    /* Make scroll indicators more visible on mobile */
+    .modern-table-wrapper::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .modern-table-wrapper {
+        max-height: calc(100vh - 340px);
+        min-height: 250px;
+    }
+
+    .page-header {
+        margin-bottom: 16px;
+    }
+
+    .card-header-modern {
+        padding: 16px;
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .modern-table-wrapper {
+        max-height: calc(100vh - 200px);
+        min-height: 200px;
+    }
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dropdown-menu-modern.show {
+    animation: fadeIn 0.2s ease;
+}
+
+/* Media query for larger screens - disable scroll */
+@media (min-height: 600px) {
+    .dropdown-menu-modern {
+        max-height: none; /* Remove max-height on larger screens */
+        overflow-y: visible;
+    }
+}
+
+/* For very small screens */
+@media (max-height: 500px) {
+    .dropdown-menu-modern {
+        max-height: 250px; /* Smaller max height for tiny screens */
+    }
+}

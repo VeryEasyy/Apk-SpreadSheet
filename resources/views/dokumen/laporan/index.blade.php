@@ -2,7 +2,12 @@
 
 @section('title', 'Dokumen Laporan')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/pages/report_list.css') }}">
+@endpush
+
 @section('content')
+<<<<<<< HEAD
 <h3 class="fw-bold mb-2">Dokumen Laporan</h3>
 <p class="text-muted mb-4">Daftar laporan yang tersedia di sistem</p>
 
@@ -353,62 +358,62 @@
 
             </div>
         </div>
+=======
+<div class="page-header">
+    <h1 class="page-title">Dokumen Laporan</h1>
+    <p class="page-subtitle">Kelola dan pantau semua laporan dalam sistem</p>
+</div>
+
+<div class="modern-card">
+    <div class="card-header-modern">
+        <h2 class="card-title-modern">Daftar Laporan</h2>
+        <button class="btn-add" data-bs-toggle="modal" data-bs-target="#tambahLaporanModal">
+            <i class="bi bi-plus-lg"></i>
+            Tambah Laporan
+        </button>
+    </div>
+
+    <div class="modern-table-wrapper">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th class="row-number">No</th>
+                    <th>Judul Laporan</th>
+                    <th>Pembuat</th>
+                    <th>Tanggal Dibuat</th>
+                    <th>Status</th>
+                    <th>Terakhir Diedit</th>
+                    <th>Editor</th>
+                    <th style="width: 80px; text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @forelse ($laporan as $item)
+                    @include('dokumen.partials.report_row', ['report' => $item, 'index' => $loop->iteration])
+                    @include('dokumen.partials.modals', ['report' => $item])
+                @empty
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h5>Belum Ada Laporan</h5>
+                                <p>Klik tombol "Tambah Laporan" untuk membuat laporan baru</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+>>>>>>> 84223df70e77d9d915ab6cad0cd77aea609c63cc
     </div>
 @endif
 
 
 
-{{-- SweetAlert Success --}}
-@if(session()->has('success'))
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: "{{ session('success') }}",
-            timer: 3000,
-            showConfirmButton: false
-        }).then(() => {
-            window.location.href = "{{ route('dokumen.laporan') }}";
-        });
-    });
-    </script>
-@endif
-
-{{-- SweetAlert Error --}}
-@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: "{{ session('error') }}",
-            timer: 3000,
-            showConfirmButton: false
-        });
-
-        setTimeout(() => {
-            window.location.href = "{{ route('dokumen.laporan') }}";
-        }, 3000);
-    </script>
-@endif
-
-
-
-<script>
-    function hapusLaporan(id) {
-        Swal.fire({
-            title: 'Yakin?',
-            text: "Data tidak bisa dikembalikan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, hapus!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('delete-form-' + id).submit();
-            }
-        })
-    }
-</script>
+@include('dokumen.partials.add_modal')
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/pages/report_list.js') }}"></script>
+@endpush

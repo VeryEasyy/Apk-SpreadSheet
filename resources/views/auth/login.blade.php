@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,37 +10,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-black bg-opacity-80 p-8 rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-500 max-w-md w-full">
-        <h1 class="text-4xl font-extrabold text-center mb-8 text-white">Login</h1>
+    {{-- Text font --}}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    {{-- Modal if got error --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="pt-8 pb-8 pr-2 pl-2 sm:p-8 rounded-3xl shadow-2xl transform max-w-md w-full">
+        <div class="w-full flex justify-center top-4 left-0">
+            <img src="{{ asset('assets/images/logo/bando-logo.png') }}" alt="Logo" class="h-12 w-auto">
+        </div>
+
+        <h1 class="mt-5 text-2xl sm:text-4xl font-bold text-center mb-2" style="font-family: 'Poppins';">
+            Welcome Back</h1>
+        <h1 class="text-xs sm:text-sm font-light text-gray-400 text-center mb-8" style="font-family: 'Poppins';">
+            Enter your NIK and Password to access your account</h1>
 
         {{-- Pesan success --}}
-        @if(session('success'))
-            <div class="bg-green-500 text-white p-3 rounded mb-4 text-center">
+        {{-- @if (session('success'))
+            <div class="bg-green-500 p-3 rounded mb-4 text-center">
                 {{ session('success') }}
             </div>
-        @endif
+        @endif --}}
 
-        {{-- Pesan error login --}}
-        @if($errors->has('login_error'))
-            <div class="bg-red-500 text-white p-3 rounded mb-4 text-center">
+        {{-- Pesan error login
+        @if ($errors->has('login_error'))
+            <div class="bg-red-300 p-3 rounded mb-4 text-center">
                 {{ $errors->first('login_error') }}
             </div>
-        @endif
+        @endif --}}
 
         <form action="{{ route('login_process') }}" method="POST" class="space-y-6">
             @csrf
 
             {{-- NIK --}}
             <div class="relative">
-                <input type="text"
-                       name="nik"
-                       placeholder="Masukkan NIK"
-                       value="{{ old('nik') }}"
-                       class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300 @error('nik') ring-2 ring-red-500 @enderror">
-                <i class="fas fa-id-card absolute right-3 top-3 text-pink-500"></i>
+                <input type="text" name="nik" placeholder="Enter your NIK" value="{{ old('nik') }}"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-light text-gray-400"
+                    style="font-family: 'Poppins', sans-serif;">
                 @error('nik')
                     <small class="text-red-500">{{ $message }}</small>
                 @enderror
@@ -47,68 +59,138 @@
 
             {{-- Password --}}
             <div class="relative">
-                <input type="password"
-                       name="password"
-                       placeholder="Masukkan Password"
-                       autocomplete="new-password"
-                       class="w-full bg-gray-800 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-300 @error('password') ring-2 ring-red-500 @enderror">
-                <i class="fas fa-lock absolute right-3 top-3 text-pink-500"></i>
+                <input type="password" name="password" placeholder="Enter your password" autocomplete="new-password"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-normal text-gray-400"
+                    style="font-family: 'Poppins', sans-serif;">
                 @error('password')
                     <small class="text-red-500">{{ $message }}</small>
                 @enderror
             </div>
 
-            <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
-                Login
+
+            <button type="submit"
+                class="w-full bg-[#00128E] text-white font-bold py-3 rounded-xl 
+           transition-all duration-300"
+                style="font-family: 'Poppins', sans-serif;">
+                Log In
             </button>
+
         </form>
 
-        <div class="mt-6 text-center">
+        {{-- <div class="mt-6 text-center">
             <p class="text-gray-400 mb-2">Atau daftar akun baru</p>
-            <a href="{{ route('register') }}" class="w-full inline-block bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-600 transition-all duration-300">
+            <a href="{{ route('register') }}" class="w-full inline-block py-3 rounded-lg">
                 Daftar Akun
             </a>
+        </div> --}}
+        <div class="flex mt-6 gap-2 justify-center">
+            <div>
+                <div class="text-xs sm:text-sm font-light text-gray-400" style="font-family: 'Poppins';">Don't Have An
+                    Account?
+                </div>
+            </div>
+
+            <div class="text-xs sm:text-sm font-bold text-[#00128E]" style="font-family: 'Poppins'">
+                <a href="{{ route('register') }}">
+                    Register Now.
+                </a>
+            </div>
         </div>
+
     </div>
 
-    <!-- Animasi ikon dekoratif -->
-    <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <i class="fas fa-meteor text-yellow-500 text-4xl absolute animate-ping" style="top: 10%; left: 5%;"></i>
-        <i class="fas fa-star text-blue-500 text-2xl absolute animate-pulse" style="top: 20%; right: 10%;"></i>
-        <i class="fas fa-rocket text-red-500 text-5xl absolute float" style="bottom: 15%; left: 15%;"></i>
-        <i class="fas fa-planet-ringed text-purple-500 text-6xl absolute rotate" style="top: 40%; right: 20%;"></i>
-    </div>
-
-    <!-- SweetAlert -->
+   
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{-- LOGIN GAGAL --}}
-    @if($errors->has('login_error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal!',
-            text: '{{ $errors->first('login_error') }}',
-            confirmButtonText: 'Coba Lagi',
-            confirmButtonColor: '#e11d48'
-        });
-    </script>
-    @endif
+    {{-- Pesan error login --}}
+    @if ($errors->has('login_error'))
+       
+        @php
+            $loginErrorMessage = $errors->first('login_error');
+        @endphp
 
-    {{-- LOGIN BERHASIL --}}
-    @if(session('success'))
         <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-                timer: 2000,
-                showConfirmButton: false,
-                allowOutsideClick: false
-            }).then(() => {
-                window.location.href = "{{ route('dashboard') }}";
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    title: {!! json_encode($loginErrorMessage) !!},
+                    showConfirmButton: false,
+                    showCloseButton: true,
+
+                    timer: null,
+
+                    customClass: {
+                        popup: 'rounded-lg shadow-lg p-3'
+                    },
+                    didOpen: (toast) => {
+                        toast.style.fontFamily = 'Poppins, sans-serif';
+                    }
+                });
             });
         </script>
     @endif
+
+    {{-- LOGIN BERHASIL --}}
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Please wait…',
+                    html: '<div class="custom-spinner" aria-hidden="true"></div>',
+                    background: 'transparent',
+                    // backdrop: 'rgba(0,0,0,0)',
+                    color: '#fff',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+
+                    customClass: {
+                        title: 'swal-title-poppins',
+                    },
+                    // didOpen: () => {
+                    //     Swal.hideLoading();
+                    // },
+                });
+
+
+                setTimeout(function() {
+                    window.location.href = "{{ route('Dashboard') }}";
+
+                }, 2000);
+            });
+        </script>
+        <style>
+            /* Font Poppins khusus untuk title */
+            .swal-title-poppins {
+                font-family: 'Poppins', sans-serif !important;
+                font-weight: 400;
+                font-size: 14px;
+                /* color: #000; */
+            }
+
+            .custom-spinner {
+                border: 4px solid #e0e0e0;
+
+                border-top: 4px solid #00128E;
+
+                border-radius: 50%;
+                width: 35px;
+                height: 35px;
+                margin: 10px auto;
+                animation: spin 0.9s linear infinite;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    @endif
+
 </body>
+
 </html>

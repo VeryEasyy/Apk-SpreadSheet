@@ -1,5 +1,6 @@
 body {
-    background: #f5f5f5;
+    /* background: #f5f5f5; */
+    background: red;
 }
 
 /* Sidebar */
@@ -51,16 +52,16 @@ body {
 }
 
 /* Sidebar Container */
-.sidebar-custom {
+/* .sidebar-custom {
     position: fixed;
     width: 260px;
     height: 100vh;
     overflow-y: auto;
 
-    /* Background gambar sidebar */
+    Background gambar sidebar
     background: url('/assets/images/sidebar/sidebar-bg.jpg') no-repeat center center;
     background-size: cover;
-}
+} */
 
 /* Overlay agar tulisan jelas */
 .sidebar-custom::before {

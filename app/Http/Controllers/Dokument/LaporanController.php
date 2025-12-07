@@ -130,7 +130,7 @@ class LaporanController extends Controller
         $cols = range('A', 'J'); // 10 kolom
         $rows = range(1, 20);     // 20 baris
 
-        return view('dokumen.laporan.spreadsheet', compact(
+        return view('dokumen.spreadsheet.index', compact(
             'report', 'sheet', 'cells', 'cols', 'rows'
         ));
     }
