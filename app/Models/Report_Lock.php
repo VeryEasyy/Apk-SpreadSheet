@@ -19,6 +19,8 @@ class Report_Lock extends Model
         'locked_at'
     ];
 
+    
+
     public function sheet()
     {
         return $this->belongsTo(Report_Sheets::class);

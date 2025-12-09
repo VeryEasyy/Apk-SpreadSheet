@@ -20,7 +20,10 @@
             Tambah Laporan
         </button>
     </div>
+    <div class="card-body-modern">
 
+        @include('dokumen.partials.search')
+    </div>
     <div class="modern-table-wrapper">
         <table class="modern-table">
             <thead>
