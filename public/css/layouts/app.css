@@ -1,29 +1,25 @@
-/* 
-   Base Styles & Reset
-    */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f6fa;
-    color: #2c3e50;
+body,
+html {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
     line-height: 1.6;
+    color: #1a1a1a;
+    background-color: #f5f6fa;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden; /* CRITICAL: Prevent horizontal scroll */
 }
 
-/* 
-   Layout Structure
-    */
+
 .app-layout {
     display: flex;
     min-height: 100vh;
-    overflow-x: hidden; /* CRITICAL: Prevent horizontal scroll */
+    overflow-x: hidden; 
 }
 
 .main-content {
@@ -32,24 +28,22 @@ body {
     padding: 20px;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     min-height: 100vh;
-    overflow-x: hidden; /* CRITICAL: Prevent horizontal scroll */
-    max-width: calc(100vw - 90px); /* Prevent overflow */
+    overflow-x: hidden; 
+    max-width: calc(100vw - 90px); 
 }
 
 .sidebar-wrapper.expanded ~ .main-content {
     margin-left: 240px;
-    max-width: calc(100vw - 240px); /* Adjust when sidebar expanded */
+    max-width: calc(100vw - 240px);
 }
 
 .content-wrapper {
     max-width: 1400px;
     margin: 0 auto;
-    overflow-x: hidden; /* CRITICAL: Prevent horizontal scroll */
+    overflow-x: hidden; 
 }
 
-/* 
-   Guest Layout
-    */
+
 .guest-layout {
     min-height: 100vh;
     display: flex;
@@ -58,9 +52,6 @@ body {
     padding: 20px;
 }
 
-/* 
-   Breadcrumb
-    */
 .breadcrumb {
     background: white;
     padding: 12px 20px;
@@ -78,9 +69,7 @@ body {
     color: #5568d3;
 }
 
-/* 
-   Alerts
-    */
+
 .alert {
     border-radius: 8px;
     border: none;
@@ -92,9 +81,6 @@ body {
     font-size: 18px;
 }
 
-/* 
-   Scrollbar Styling
-    */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
