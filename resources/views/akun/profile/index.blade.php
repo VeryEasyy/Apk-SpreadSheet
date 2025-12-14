@@ -2,161 +2,163 @@
 
 @section('title', 'Profil Karyawan')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/pages/profile.css') }}">
+@endpush
+
 @section('content')
-<h3 class="fw-bold mb-2">Profil Karyawan</h3>
-<p class="text-muted mb-4">Informasi lengkap mengenai data diri karyawan.</p>
+<div class="profile-header">
+    <div>
+        <h1 class="profile-title">Profil Karyawan</h1>
+        <p class="profile-subtitle">Informasi lengkap mengenai data diri karyawan</p>
+    </div>
+</div>
 
-<div class="card shadow-sm border-0">
-    <div class="card-body">
-
-        @if ($karyawan)
-
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">Nama Lengkap</div>
-            <div class="col-md-9">{{ $karyawan->full_name }}</div>
+@if ($karyawan)
+    {{-- Profile Card --}}
+    <div class="profile-card">
+        <div class="profile-banner">
+            <div class="banner-gradient"></div>
         </div>
+        
+        <div class="profile-content">
+            <div class="profile-avatar-section">
+                <div class="profile-avatar">
+                    {{ strtoupper(substr($karyawan->full_name, 0, 2)) }}
+                </div>
+                <div class="profile-basic-info">
+                    <h2 class="profile-name">{{ $karyawan->full_name }}</h2>
+                    <p class="profile-position">
+                        <i class="bi bi-briefcase"></i>
+                        {{ $karyawan->position ?? 'Posisi tidak diatur' }}
+                    </p>
+                    <span class="profile-badge">
+                        <i class="bi bi-calendar-check"></i>
+                        Bergabung {{ $karyawan->join_date ? \Carbon\Carbon::parse($karyawan->join_date)->format('d M Y') : '-' }}
+                    </span>
+                </div>
+                <button class="btn-edit-profile" data-bs-toggle="modal" data-bs-target="#editModal">
+                    <i class="bi bi-pencil"></i>
+                    Edit Profil
+                </button>
+            </div>
 
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">Alamat</div>
-            <div class="col-md-9">{{ $karyawan->address ?? '-' }}</div>
+            <div class="profile-details-grid">
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>Nama Lengkap</label>
+                        <p>{{ $karyawan->full_name }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>No Telepon</label>
+                        <p>{{ $karyawan->phone ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>Alamat</label>
+                        <p>{{ $karyawan->address ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-briefcase"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>Posisi</label>
+                        <p>{{ $karyawan->position ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>Maintenance</label>
+                        <p class="text-capitalize">{{ $karyawan->maintenance ?? '-' }}</p>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <div class="detail-content">
+                        <label>Tanggal Gabung</label>
+                        <p>{{ $karyawan->join_date ? \Carbon\Carbon::parse($karyawan->join_date)->format('d M Y') : '-' }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">No Telp</div>
-            <div class="col-md-9">{{ $karyawan->phone ?? '-' }}</div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">Posisi</div>
-            <div class="col-md-9">{{ $karyawan->position ?? '-' }}</div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-3 fw-bold">Maintenance</div>
-            <div class="col-md-9 text-capitalize">{{ $karyawan->maintenance ?? '-' }}</div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-3 fw-bold">Tanggal Gabung</div>
-            <div class="col-md-9">{{ $karyawan->join_date ?? '-' }}</div>
-        </div>
-
-        <!-- BUTTON EDIT -->
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
-            <i class="material-icons align-middle me-1">edit</i>
-            Edit Profil
-        </button>
-
-
-        @else
-
-        <div class="text-center">
-            <p class="text-muted">Profil belum dibuat.</p>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">
-                <i class="material-icons align-middle me-1">add</i>
-                Buat Profil
+    {{-- Edit Modal --}}
+    @include('akun.profile.partials.edit-modal')
+@else
+    {{-- Empty State --}}
+    <div class="empty-state-card">
+        <div class="empty-state-content">
+            <div class="empty-state-icon">
+                <i class="bi bi-person-x"></i>
+            </div>
+            <h3>Profil Belum Dibuat</h3>
+            <p>Silakan buat profil Anda untuk melengkapi informasi karyawan</p>
+            <button class="btn-create-profile" data-bs-toggle="modal" data-bs-target="#createModal">
+                <i class="bi bi-plus-lg"></i>
+                Buat Profil Sekarang
             </button>
         </div>
-
-        @endif
-
     </div>
-</div>
 
-@if($karyawan)
-<!-- ========================================================= -->
-<!-- ===================== MODAL EDIT ========================= -->
-<!-- ========================================================= -->
-<div class="modal fade" id="editModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    {{-- Create Modal --}}
+    @include('akun.profile.partials.create-modal')
+@endif
+@endsection
 
-      <form action="{{ route('akun.profile.update') }}" method="POST">
-        @csrf
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('js/pages/profile.js') }}"></script>
 
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Profil Karyawan</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body row g-3">
-            {{-- sweet alert berhasil dan gagal --}}
-            @if (session('success'))
-            <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil',
-                    text: '{{ session("success") }}',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-
-                setTimeout(() => {
-                    window.location.href = "{{ route('akun.profile') }}";
-                }, 3000);
-            });
-            </script>
-            @endif
-
-            <div class="col-md-12">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-control" name="full_name"
-                       value="{{ $karyawan->full_name }}" required>
-            </div>
-
-            <div class="col-md-12">
-                <label class="form-label">Alamat</label>
-                <textarea class="form-control" name="address" rows="2">{{ $karyawan->address }}</textarea>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">No Telp</label>
-                <input type="text" class="form-control" name="phone"
-                       value="{{ $karyawan->phone }}">
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Posisi</label>
-                <input type="text" class="form-control" name="position"
-                       value="{{ $karyawan->position }}">
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Maintenance</label>
-                <select class="form-select" name="maintenance">
-                    <option value="">-- Pilih --</option>
-                    <option value="elektrik" {{ $karyawan->maintenance == 'elektrik' ? 'selected' : '' }}>Elektrik</option>
-                    <option value="mekanik" {{ $karyawan->maintenance == 'mekanik' ? 'selected' : '' }}>Mekanik</option>
-                    <option value="office" {{ $karyawan->maintenance == 'office' ? 'selected' : '' }}>Office</option>
-                </select>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Tanggal Gabung</label>
-                <input 
-                    type="date" 
-                    class="form-control" 
-                    name="join_date"
-                    value="{{ $karyawan && strtotime($karyawan->join_date) ? date('Y-m-d', strtotime($karyawan->join_date)) : '' }}">
-            </div>
-
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-        </div>
-
-      </form>
-
-    </div>
-  </div>
-</div>
+@if (session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session("success") }}',
+        showConfirmButton: false,
+        timer: 3000,
+        toast: true,
+        position: 'top-end'
+    });
+</script>
 @endif
 
-
-
-
-
-@endsection
+@if (session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '{{ session("error") }}',
+        showConfirmButton: false,
+        timer: 3000,
+        toast: true,
+        position: 'top-end'
+    });
+</script>
+@endif
+@endpush
