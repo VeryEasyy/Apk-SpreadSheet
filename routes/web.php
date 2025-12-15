@@ -49,6 +49,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/dokumen/laporan', [LaporanController::class, 'store'])->name('dokumen.laporan.store');
     Route::post('/dokumen/laporan/update/{id}', [LaporanController::class, 'update'])->name('dokumen.laporan.update');
     Route::delete('/dokumen/laporan/{id}', [LaporanController::class, 'delete'])->name('dokumen.laporan.delete');
+    
+    Route::patch('/dokumen/laporan/{id}/update-status', [LaporanController::class, 'updateStatus'])
+    ->name('dokumen.laporan.update-status');
 
     // spreadsheet
     Route::get('/dokumen/laporan/spreadsheet', [LaporanController::class, 'index'])->name('dokumen.laporan.spreadsheet');

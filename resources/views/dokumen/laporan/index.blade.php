@@ -56,10 +56,11 @@
     </div>
 </div>
 
-
 @include('dokumen.partials.add_modal')
 @endsection
 
 @push('scripts')
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/pages/report_list.js') }}"></script>
 @endpush

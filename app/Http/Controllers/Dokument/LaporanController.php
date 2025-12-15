@@ -28,28 +28,28 @@ class LaporanController extends Controller
 
 
         // filter judul
-        if(request('search')){
+        if (request('search')) {
             $query->where('title', 'like', '%' . request('search') . '%');
         }
 
         // filter status    
-        if(request('status')){
+        if (request('status')) {
             $query->where('status', request('status'));
         }
 
         // filter pembuat
-        if(request('owner')){
+        if (request('owner')) {
             $query->where('owner_id', request('owner'));
         }
 
         $laporan = $query->get();
-            
+
 
         return view('dokumen.laporan.index', compact('laporan', 'users'));
     }
 
     // tambah data laporan 
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'title'       => 'required|string|max:255',
@@ -70,10 +70,10 @@ class LaporanController extends Controller
             'order'      => 1
         ]);
 
-         return redirect()->route('dokumen.laporan')
-                     ->with('success', 'Laporan berhasil ditambahkan!');
+        return redirect()->route('dokumen.laporan')
+            ->with('success', 'Laporan berhasil ditambahkan!');
     }
- 
+
     // UPDATE DATA Laporan
     public function update(Request $request, $id)
     {
@@ -102,7 +102,7 @@ class LaporanController extends Controller
         Report::findOrFail($id)->delete();
 
         return redirect()->route('dokumen.laporan')
-                     ->with('success', 'Laporan berhasil dihapus!');
+            ->with('success', 'Laporan berhasil dihapus!');
     }
 
 
@@ -117,7 +117,7 @@ class LaporanController extends Controller
             abort(403);
         }
 
-        $report = Report::findOrFail($id); 
+        $report = Report::findOrFail($id);
 
         $sheet = $report->sheets()->firstOrCreate([
             'sheet_name' => 'Sheet 1'
@@ -131,11 +131,15 @@ class LaporanController extends Controller
         $rows = range(1, 20);     // 20 baris
 
         return view('dokumen.spreadsheet.index', compact(
-            'report', 'sheet', 'cells', 'cols', 'rows'
+            'report',
+            'sheet',
+            'cells',
+            'cols',
+            'rows'
         ));
     }
 
-     // =========================
+    // =========================
     // VIEW (readonly) Spreadsheet
     // =========================
     public function viewSheet($id)
@@ -145,8 +149,8 @@ class LaporanController extends Controller
         $sheet = $report->sheets()->firstOrFail();
 
         $cells = Report_Cell::where('sheet_id', $sheet->id)
-                    ->get()
-                    ->keyBy('cell');
+            ->get()
+            ->keyBy('cell');
 
         $cols = range('A', 'J');
         $rows = range(1, 20);
@@ -169,8 +173,8 @@ class LaporanController extends Controller
         $sheet = $report->sheets()->firstOrFail();
 
         $cells = Report_Cell::where('sheet_id', $sheet->id)
-                ->get()
-                ->keyBy('cell');
+            ->get()
+            ->keyBy('cell');
 
         $cols = range('A', 'J');
         $rows = range(1, 20);
@@ -188,28 +192,28 @@ class LaporanController extends Controller
 
 
 
-    
+
     // CELL
     /////////////////
 
-     // update data cell
+    // update data cell
     public function updateCell(Request $request)
     {
-       
+
         $request->validate([
             'sheet_id' => 'required',
             'cell' => 'required',
             'value' => 'nullable'
         ]);
 
-        $CekCell = Report_Cell::where('sheet_id' , $request->sheet_id)
-                    ->where('cell', $request->cell)->first();
+        $CekCell = Report_Cell::where('sheet_id', $request->sheet_id)
+            ->where('cell', $request->cell)->first();
 
-        
+
         $OldValue = $CekCell->value ?? null;
 
         // simpan perubahan old value ke new value
-        if($OldValue !== $request->value){
+        if ($OldValue !== $request->value) {
 
             // ambil sheet untuk dapet report id
             $sheet = Report_Sheets::find($request->sheet_id);
@@ -241,7 +245,28 @@ class LaporanController extends Controller
         return response()->json(['success' => true]);
     }
 
-   
+    public function updateStatus(Request $request, $id)
+    {
+        // Validasi input
+        $validated = $request->validate([
+            'status' => 'required|in:draft,published,archived'
+        ]);
 
+        $status = $validated['status'];
 
+        // Simpan status ke session (untuk sementara, tidak ke database)
+        $sessionKey = "report_status_{$id}";
+        session([$sessionKey => $status]);
+
+        // Label status untuk notifikasi
+        $statusLabels = [
+            'draft' => 'Draft',
+            'published' => 'Published',
+            'archived' => 'Archived'
+        ];
+
+        // Redirect kembali ke halaman laporan dengan notifikasi
+        return redirect()->route('dokumen.laporan')
+            ->with('success', 'Laporan berhasil disimpan sebagai ' . $statusLabels[$status]);
+    }
 }

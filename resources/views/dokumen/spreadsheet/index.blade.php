@@ -4,9 +4,19 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/components/spreadsheet.css') }}">
+
 @endpush
 
 @section('content')
+{{-- Hidden Flash Messages for Global Toast
+@if (session('success'))
+    <div data-success-message="{{ session('success') }}" style="display: none;"></div>
+@endif
+
+@if (session('error'))
+    <div data-error-message="{{ session('error') }}" style="display: none;"></div>
+@endif --}}
+
 <div class="spreadsheet-container">
     {{-- Header Section --}}
     <div class="spreadsheet-header">
@@ -19,6 +29,31 @@
                 <h4 class="title">{{ $report->title }}</h4>
             </div>
             <div class="action-buttons">
+                {{-- Save Dropdown --}}
+                <div class="save-dropdown" id="saveDropdown">
+                    <button class="btn-save-main" onclick="toggleSaveDropdown(event)">
+                        <i class="bi bi-floppy"></i>
+                        <span>Save</span>
+                        <i class="bi bi-chevron-down" style="font-size: 12px;"></i>
+                    </button>
+                    <div class="save-dropdown-menu">
+                        <button class="save-dropdown-item draft" onclick="saveWithStatus('draft')">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <span>Save as Draft</span>
+                        </button>
+                        <button class="save-dropdown-item published" onclick="saveWithStatus('published')">
+                            <i class="bi bi-check-circle"></i>
+                            <span>Save as Published</span>
+                        </button>
+                        <button class="save-dropdown-item archived" onclick="saveWithStatus('archived')">
+                            <i class="bi bi-archive"></i>
+                            <span>Save as Archived</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="width: 2px; height: 30px; background: #e0e0e0; margin: 0 8px;"></div>
+                
                 <button class="btn-action" id="importExcel" title="Import Excel">
                     <i class="bi bi-upload"></i>
                 </button>
@@ -43,6 +78,7 @@
         <div class="toolbar-group">
             <label class="toolbar-label">Font:</label>
             <select class="toolbar-select" id="fontFamily">
+                <option value="Poppins">Poppins</option>
                 <option value="Inter">Inter</option>
                 <option value="Arial">Arial</option>
                 <option value="Times New Roman">Times New Roman</option>
@@ -188,6 +224,13 @@
     {{-- Hidden File Input for Import --}}
     <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display: none;">
 
+    {{-- Hidden Form for Status Update --}}
+    <form id="statusForm" action="{{ route('dokumen.laporan.update-status', $report->id) }}" method="POST" style="display: none;">
+        @csrf
+        @method('PATCH')
+        <input type="hidden" name="status" id="statusInput">
+    </form>
+
     {{-- Context Menu --}}
     <div class="context-menu" id="contextMenu">
         <div class="context-menu-item" data-action="copy">
@@ -225,12 +268,14 @@
             <span>Insert Column</span>
         </div>
     </div>
+
 </div>
 @endsection
 
 @push('scripts')
 {{-- SheetJS Library for Excel Export/Import --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ asset('js/components/spreadsheet.js') }}"></script>
 <script>
     // Initialize spreadsheet with configuration
@@ -238,7 +283,59 @@
         updateRoute: "{{ route('laporan.cell.update') }}",
         csrfToken: "{{ csrf_token() }}",
         reportTitle: "{{ $report->title }}",
-        sheetId: "{{ $sheet->id }}"
+        sheetId: "{{ $sheet->id }}",
+        reportId: "{{ $report->id }}"
     };
+
+    // Toggle Save Dropdown
+    function toggleSaveDropdown(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('saveDropdown');
+        dropdown.classList.toggle('active');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('saveDropdown');
+        if (!dropdown.contains(event.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Save with status function
+    function saveWithStatus(status) {
+        // Close dropdown
+        document.getElementById('saveDropdown').classList.remove('active');
+
+        const statusLabels = {
+            'draft': 'Draft',
+            'published': 'Published',
+            'archived': 'Archived'
+        };
+
+        Swal.fire({
+            title: `Save as ${statusLabels[status]}?`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            customClass: {
+                popup: 'simple-confirm',
+                confirmButton: 'swal2-confirm',
+                cancelButton: 'swal2-cancel'
+            },
+            buttonsStyling: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Set status value
+                document.getElementById('statusInput').value = status;
+                
+                // Submit form
+                document.getElementById('statusForm').submit();
+            }
+        });
+    }
 </script>
 @endpush

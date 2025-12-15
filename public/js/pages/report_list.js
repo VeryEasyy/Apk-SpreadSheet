@@ -1,12 +1,12 @@
 /**
  * Report List Page JavaScript
- * Handles dropdown positioning, delete confirmation, and notifications
+ * Handles dropdown positioning, delete confirmation, and table scroll
  */
 
 document.addEventListener("DOMContentLoaded", function () {
     initializeDropdowns();
-    initializeNotifications();
     initializeTableScroll();
+    loadSweetAlertIfNeeded();
 });
 
 /**
@@ -47,19 +47,17 @@ function initializeDropdowns() {
             }
         });
 
-        // Close dropdown when user clicks a menu item inside it.
-        // Matches common clickable elements; you can adjust selectors as needed.
+        // Close dropdown when user clicks a menu item inside it
         menu.addEventListener("click", function (e) {
             const item = e.target.closest(
                 ".dropdown-item, [data-close-modal], a, button"
             );
-            if (!item) return; // not a selectable element
+            if (!item) return;
 
             // Close the dropdown menu
             menu.classList.remove("show");
 
-            // If the dropdown is inside a modal (or the clicked item is inside a modal),
-            // close the modal as well.
+            // If the dropdown is inside a modal, close the modal as well
             const modalEl =
                 dropdown.closest(".modal") || item.closest(".modal");
             if (modalEl) {
@@ -95,8 +93,7 @@ function initializeDropdowns() {
 }
 
 /**
- * Attempt to close a modal element using available APIs.
- * Supports Bootstrap 5 (native), jQuery .modal('hide'), and a vanilla fallback.
+ * Attempt to close a modal element using available APIs
  */
 function closeModal(modalEl) {
     if (!modalEl) return;
@@ -124,16 +121,14 @@ function closeModal(modalEl) {
         // ignore
     }
 
-    // 3) Vanilla fallback: remove show class, aria attributes, and backdrop
+    // 3) Vanilla fallback
     modalEl.classList.remove("show");
     modalEl.setAttribute("aria-hidden", "true");
     modalEl.removeAttribute("aria-modal");
     modalEl.style.display = "none";
 
-    // Remove .modal-open from body if present
     document.body.classList.remove("modal-open");
 
-    // Remove any modal backdrop elements inserted by frameworks
     const backdrops = document.querySelectorAll(".modal-backdrop");
     backdrops.forEach((b) => b.parentNode && b.parentNode.removeChild(b));
 }
@@ -147,7 +142,6 @@ function updateScrollShadows(menu) {
     const clientHeight = menu.clientHeight;
     const scrollBottom = scrollHeight - scrollTop - clientHeight;
 
-    // Add/remove shadow classes
     if (scrollTop > 5) {
         menu.classList.add("has-scroll-top");
     } else {
@@ -162,11 +156,11 @@ function updateScrollShadows(menu) {
 }
 
 /**
- * Position dropdown menu using fixed positioning with smart scroll detection
+ * Position dropdown menu using fixed positioning
  */
 function positionDropdown(toggle, menu) {
     const toggleRect = toggle.getBoundingClientRect();
-    const menuWidth = 220; // min-width from CSS
+    const menuWidth = 220;
     const viewportHeight = window.innerHeight;
     const viewportWidth = window.innerWidth;
     const padding = 8;
@@ -180,12 +174,10 @@ function positionDropdown(toggle, menu) {
 
     let top, left;
 
-    // Calculate available space
     const spaceBelow = viewportHeight - toggleRect.bottom - padding;
     const spaceAbove = toggleRect.top - padding;
-    const maxAllowedHeight = viewportHeight - 100; // 50px padding from top and bottom
+    const maxAllowedHeight = viewportHeight - 100;
 
-    // Determine if we need scrolling
     let needsScroll = false;
     let finalHeight = menuHeight;
 
@@ -196,27 +188,20 @@ function positionDropdown(toggle, menu) {
 
     // Calculate vertical position
     if (spaceBelow >= finalHeight || spaceBelow > spaceAbove) {
-        // Show below
         top = toggleRect.bottom + padding;
-
-        // If menu would go off bottom, adjust
         if (top + finalHeight > viewportHeight - padding) {
             top = viewportHeight - finalHeight - padding;
         }
     } else {
-        // Show above
         top = toggleRect.top - finalHeight - padding;
-
-        // If menu would go off top, adjust
         if (top < padding) {
             top = padding;
         }
     }
 
-    // Calculate horizontal position (align to right of toggle)
+    // Calculate horizontal position
     left = toggleRect.right - menuWidth;
 
-    // Ensure menu stays within viewport horizontally
     if (left < padding) {
         left = padding;
     } else if (left + menuWidth > viewportWidth - padding) {
@@ -227,7 +212,6 @@ function positionDropdown(toggle, menu) {
     menu.style.top = `${top}px`;
     menu.style.left = `${left}px`;
 
-    // Apply max-height only if needed
     if (needsScroll) {
         menu.style.maxHeight = `${finalHeight}px`;
         menu.style.overflowY = "auto";
@@ -248,81 +232,41 @@ function closeAllDropdowns() {
 }
 
 /**
- * Initialize SweetAlert notifications
+ * Load SweetAlert2 if not already loaded (for delete confirmation)
  */
-function initializeNotifications() {
-    // Check if SweetAlert2 is loaded
-    if (typeof Swal === "undefined") {
-        console.warn("SweetAlert2 not loaded. Loading from CDN...");
-        loadSweetAlert();
-        return;
+function loadSweetAlertIfNeeded() {
+    if (typeof Swal === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        document.head.appendChild(script);
     }
-
-    showSessionNotifications();
-}
-
-/**
- * Load SweetAlert2 from CDN if not available
- */
-function loadSweetAlert() {
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
-    script.onload = () => {
-        showSessionNotifications();
-    };
-    document.head.appendChild(script);
-}
-
-/**
- * Show session-based notifications
- */
-function showSessionNotifications() {
-    // Success notification
-    const successMessage = document.querySelector("[data-success-message]");
-    if (successMessage) {
-        const message = successMessage.dataset.successMessage;
-        showToast("success", "Berhasil!", message);
-    }
-
-    // Error notification
-    const errorMessage = document.querySelector("[data-error-message]");
-    if (errorMessage) {
-        const message = errorMessage.dataset.errorMessage;
-        showToast("error", "Gagal!", message);
-    }
-}
-
-/**
- * Show toast notification
- */
-function showToast(icon, title, text) {
-    Swal.fire({
-        icon: icon,
-        title: title,
-        text: text,
-        timer: 3000,
-        showConfirmButton: false,
-        toast: true,
-        position: "top-end",
-        timerProgressBar: true,
-    });
 }
 
 /**
  * Delete report confirmation
  */
 function hapusLaporan(id) {
+    // Ensure SweetAlert2 is loaded
+    if (typeof Swal === 'undefined') {
+        console.error('SweetAlert2 not loaded');
+        return;
+    }
+
     Swal.fire({
-        title: "Hapus Laporan?",
+        title: "Delete this report?",
         text: "Data yang dihapus tidak dapat dikembalikan!",
-        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#dc3545",
         cancelButtonColor: "#6c757d",
-        confirmButtonText: "Ya, Hapus!",
-        cancelButtonText: "Batal",
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
         reverseButtons: true,
         focusCancel: true,
+        customClass: {
+            popup: 'simple-confirm',
+            confirmButton: 'swal2-confirm',
+            cancelButton: 'swal2-cancel'
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.getElementById("delete-form-" + id);
@@ -334,18 +278,6 @@ function hapusLaporan(id) {
 }
 
 /**
- * Close dropdowns when clicking outside
- */
-document.addEventListener("click", function (event) {
-    if (!event.target.closest(".dropdown")) {
-        closeAllDropdowns();
-    }
-});
-
-// Export functions for use in blade templates
-window.hapusLaporan = hapusLaporan;
-
-/**
  * Initialize table scroll behavior
  */
 function initializeTableScroll() {
@@ -353,15 +285,12 @@ function initializeTableScroll() {
 
     if (!tableWrapper) return;
 
-    // Check if on mobile
     const isMobile = window.innerWidth <= 768;
 
     if (isMobile) {
-        // Show scroll hint on mobile
         showMobileScrollHint(tableWrapper);
     }
 
-    // Hide hint when user starts scrolling
     tableWrapper.addEventListener(
         "scroll",
         function () {
@@ -375,20 +304,18 @@ function initializeTableScroll() {
  * Show scroll hint for mobile users
  */
 function showMobileScrollHint(wrapper) {
-    // Check if already shown
     if (sessionStorage.getItem("mobileScrollHintShown")) return;
-
-    // Check if table is actually scrollable
     if (wrapper.scrollWidth <= wrapper.clientWidth) return;
 
-    // Show hint
     setTimeout(() => {
         wrapper.classList.add("show-hint");
 
-        // Hide after 3 seconds
         setTimeout(() => {
             wrapper.classList.remove("show-hint");
             sessionStorage.setItem("mobileScrollHintShown", "true");
         }, 3000);
     }, 500);
 }
+
+// Export functions
+window.hapusLaporan = hapusLaporan;
