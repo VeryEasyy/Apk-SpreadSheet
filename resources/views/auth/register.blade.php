@@ -142,7 +142,7 @@
             </p>
         </div>
 
-        <button type="submit" class="mt-5 w-full bg-[#00128E] text-white font-bold py-3 rounded-xl"
+        <button type="submit" class="mt-5 w-full bg-[#1a1a1a] text-white font-bold py-3 rounded-xl"
             style="font-family: 'Poppins', sans-serif;">
             Register
         </button>
@@ -156,7 +156,7 @@
                 </div>
             </div>
 
-            <div class="text-xs sm:text-sm font-bold text-[#00128E]" style="font-family: 'Poppins'">
+            <div class="text-xs sm:text-sm font-bold text-[#1a1a1a]" style="font-family: 'Poppins'">
                 <a href="{{ route('login') }}">
                     Sign In.
                 </a>

@@ -50,7 +50,7 @@
             {{-- NIK --}}
             <div class="relative">
                 <input type="text" name="nik" placeholder="Enter your NIK" value="{{ old('nik') }}"
-                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-light text-gray-400"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-light"
                     style="font-family: 'Poppins', sans-serif;">
                 @error('nik')
                     <small class="text-red-500">{{ $message }}</small>
@@ -60,7 +60,7 @@
             {{-- Password --}}
             <div class="relative">
                 <input type="password" name="password" placeholder="Enter your password" autocomplete="new-password"
-                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-normal text-gray-400"
+                    class="w-full px-4 py-3 border border-gray-200 rounded-md focus:outline-none font-normal"
                     style="font-family: 'Poppins', sans-serif;">
                 @error('password')
                     <small class="text-red-500">{{ $message }}</small>
@@ -69,7 +69,7 @@
 
 
             <button type="submit"
-                class="w-full bg-[#00128E] text-white font-bold py-3 rounded-xl 
+                class="w-full bg-[#1a1a1a] text-white font-bold py-3 rounded-xl 
            transition-all duration-300"
                 style="font-family: 'Poppins', sans-serif;">
                 Log In
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="text-xs sm:text-sm font-bold text-[#00128E]" style="font-family: 'Poppins'">
+            <div class="text-xs sm:text-sm font-bold text-[#1a1a1a]" style="font-family: 'Poppins'">
                 <a href="{{ route('register') }}">
                     Register Now.
                 </a>
@@ -174,7 +174,7 @@
             .custom-spinner {
                 border: 4px solid #e0e0e0;
 
-                border-top: 4px solid #00128E;
+                border-top: 4px solid #1a1a1a;
 
                 border-radius: 50%;
                 width: 35px;
