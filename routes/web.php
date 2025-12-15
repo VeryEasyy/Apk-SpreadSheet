@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Dokument\ReportLockController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\Dokument\LaporanController;
+
 
 
 Route::get('/', function () {
@@ -67,6 +69,24 @@ Route::middleware('auth')->group(function () {
     Route::post('/laporan/cell/update', [LaporanController::class, 'updateCell'])
     ->name('laporan.cell.update');
 
+
+    // Report Lock
+    
+    Route::prefix('cell-lock')->group(function () {
+
+        // kunci sel
+        Route::post('/lock', [ReportLockController::class, 'lock'])
+            ->name('cell.lock');
+
+        // membuka kunci sel (manual)
+        Route::post('/unlock', [ReportLockController::class, 'unlock'])
+            ->name('cell.unlock');
+
+        // cek apakah sel sedang dikunci
+        Route::get('/check', [ReportLockController::class, 'check'])
+            ->name('cell.check');
+
+    });
 
 
 
